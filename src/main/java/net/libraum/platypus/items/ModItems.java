@@ -22,6 +22,9 @@ public class ModItems {
     public static final Item PLATYPUS_BUCKET = registerItem("platypus_bucket",
             new EntityBucketItem(ModEntities.PLATYPUS, Fluids.WATER, SoundEvents.ITEM_BUCKET_EMPTY_AXOLOTL, new Item.Settings().maxCount(1)));
 
+    public static final Item YABBY = registerItem("yabby",
+            new Item(new FabricItemSettings()));
+
     /**
      *
      * Item Groups
@@ -34,6 +37,10 @@ public class ModItems {
         entries.add(PLATYPUS_BUCKET);
     }
 
+    private static void addItemsToIngredientItemGroup(FabricItemGroupEntries entries) {
+        entries.add(YABBY);
+    }
+
     private static Item registerItem(String name, Item item) {
         return Registry.register(Registries.ITEM, new Identifier(PlatypusMod.MOD_ID, name), item);
     }
@@ -43,5 +50,6 @@ public class ModItems {
 
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.SPAWN_EGGS).register(ModItems::addItemsToSpawnEggItemGroup);
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(ModItems::addItemsToToolsItemGroup);
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.INGREDIENTS).register(ModItems::addItemsToIngredientItemGroup);
     }
 }

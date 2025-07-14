@@ -17,6 +17,7 @@ public class ModItemGroups {
                     .icon(() -> new ItemStack(ModItems.PLATYPUS_BUCKET)).entries((displayContext, entries) -> {
                         entries.add(ModItems.PLATYPUS_SPAWN_EGG);
                         entries.add(ModItems.PLATYPUS_BUCKET);
+                        entries.add(ModItems.YABBY);
                     }).build());
     
     public static void registerItemGroups() {
