@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Dynamic;
 import net.libraum.platypus.entity.ModEntities;
 import net.libraum.platypus.items.ModItems;
+import net.libraum.platypus.sound.ModSounds;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
@@ -12,6 +13,7 @@ import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.entity.passive.PassiveEntity;
@@ -19,6 +21,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.item.Items;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.sound.SoundEvent;
+import net.minecraft.sound.SoundEvents;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -62,5 +66,44 @@ public class PlatypusEntity extends AxolotlEntity {
     @Override
     public ItemStack getBucketItem() {
         return new ItemStack(ModItems.PLATYPUS_BUCKET);
+    }
+
+    /**
+     * Sound Events
+    */
+    @Nullable
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return this.isTouchingWater() ? ModSounds.ENTITY_PLATYPUS_IDLE_WATER : ModSounds.ENTITY_PLATYPUS_IDLE_AIR;
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return ModSounds.ENTITY_PLATYPUS_HURT;
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getDeathSound() {
+        return ModSounds.ENTITY_PLATYPUS_DEATH;
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getSplashSound() {
+        return ModSounds.ENTITY_PLATYPUS_SPLASH;
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getSwimSound() {
+        return ModSounds.ENTITY_PLATYPUS_SWIM;
+    }
+
+    @Nullable
+    @Override
+    public SoundEvent getBucketFillSound() {
+        return ModSounds.ITEM_BUCKET_FILL_PLATYPUS;
     }
 }

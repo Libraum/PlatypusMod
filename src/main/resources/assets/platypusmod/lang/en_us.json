@@ -1,7 +1,19 @@
 {
+  "entity.platypusmod.platypus": "Platypus",
+
   "item.platypusmod.platypus_spawn_egg": "Platypus Spawn Egg",
   "item.platypusmod.platypus_bucket": "Bucket of Platypus",
   "item.platypusmod.yabby": "Yabby",
 
-  "itemgroup.platypus": "Platypus"
+  "itemgroup.platypus": "Platypus",
+
+  "subtitles.entity.platypus.attack": "Platypus attacks",
+  "subtitles.entity.platypus.death": "Platypus dies",
+  "subtitles.entity.platypus.hurt": "Platypus hurts",
+  "subtitles.entity.platypus.idle_air": "Platypus chirps",
+  "subtitles.entity.platypus.idle_water": "Platypus chirps",
+  "subtitles.entity.platypus.splash": "Platypus splashes",
+  "subtitles.entity.platypus.swim": "Platypus swims",
+  "subtitles.item.bucket.fill_platypus": "Platypus scooped",
+  "subtitles.item.bucket.empty": "Bucket empties"
 }

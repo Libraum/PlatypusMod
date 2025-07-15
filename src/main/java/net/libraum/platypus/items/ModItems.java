@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroupEntries;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.libraum.platypus.PlatypusMod;
 import net.libraum.platypus.entity.ModEntities;
+import net.libraum.platypus.sound.ModSounds;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
@@ -20,7 +21,7 @@ public class ModItems {
             new SpawnEggItem(ModEntities.PLATYPUS, 0x4a2e1b, 0x31373e, new FabricItemSettings()));
 
     public static final Item PLATYPUS_BUCKET = registerItem("platypus_bucket",
-            new EntityBucketItem(ModEntities.PLATYPUS, Fluids.WATER, SoundEvents.ITEM_BUCKET_EMPTY_AXOLOTL, new Item.Settings().maxCount(1)));
+            new EntityBucketItem(ModEntities.PLATYPUS, Fluids.WATER, ModSounds.ITEM_BUCKET_EMPTY_PLATYPUS, new Item.Settings().maxCount(1)));
 
     public static final Item YABBY = registerItem("yabby",
             new Item(new FabricItemSettings()));

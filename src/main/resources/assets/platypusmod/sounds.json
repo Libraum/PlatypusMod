@@ -1,0 +1,83 @@
+{
+  "entity.platypus.attack": {
+    "subtitle": "subtitles.entity.platypus.attack",
+    "sounds": [
+      "mob/axolotl/attack1",
+      "mob/axolotl/attack2",
+      "mob/axolotl/attack3",
+      "mob/axolotl/attack4"
+    ]
+  },
+  "entity.platypus.death": {
+    "subtitle": "subtitles.entity.platypus.death",
+    "sounds": [
+      "mob/axolotl/death1",
+      "mob/axolotl/death2"
+    ]
+  },
+  "entity.platypus.hurt": {
+    "subtitle": "subtitles.entity.platypus.hurt",
+    "sounds": [
+      "mob/axolotl/hurt1",
+      "mob/axolotl/hurt2",
+      "mob/axolotl/hurt3",
+      "mob/axolotl/hurt4"
+    ]
+  },
+  "entity.platypus.idle_air": {
+    "subtitle": "subtitles.entity.platypus.idle_air",
+    "sounds": [
+      "mob/axolotl/idle_air1",
+      "mob/axolotl/idle_air2",
+      "mob/axolotl/idle_air3",
+      "mob/axolotl/idle_air4",
+      "mob/axolotl/idle_air5"
+    ]
+  },
+  "entity.platypus.idle_water": {
+    "subtitle": "subtitles.entity.platypus.idle_water",
+    "sounds": [
+      "mob/axolotl/idle1",
+      "mob/axolotl/idle2",
+      "mob/axolotl/idle3",
+      "mob/axolotl/idle4",
+      "mob/axolotl/idle5"
+    ]
+  },
+  "entity.platypus.splash": {
+    "subtitle": "subtitles.entity.platypus.splash",
+    "sounds": [
+      "mob/dolphin/splash1",
+      "mob/dolphin/splash2",
+      "mob/dolphin/splash3"
+    ]
+  },
+  "entity.platypus.swim": {
+    "subtitle": "subtitles.entity.platypus.swim",
+    "sounds": [
+      "entity/fish/swim5",
+      "entity/fish/swim6",
+      "entity/fish/swim7",
+      "mob/dolphin/swim1",
+      "mob/dolphin/swim2",
+      "mob/dolphin/swim3",
+      "mob/dolphin/swim4"
+    ]
+  },
+  "item.bucket.fill_platypus": {
+    "subtitle": "subtitles.item.bucket.fill_platypus",
+    "sounds": [
+      "item/bucket/fill_axolotl1",
+      "item/bucket/fill_axolotl2",
+      "item/bucket/fill_axolotl3"
+    ]
+  },
+  "item.bucket.empty_platypus": {
+    "subtitle": "subtitles.item.bucket.empty",
+    "sounds": [
+      "item/bucket/empty_fish1",
+      "item/bucket/empty_fish2",
+      "item/bucket/empty_fish3"
+    ]
+  }
+}

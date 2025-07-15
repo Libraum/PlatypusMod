@@ -7,6 +7,7 @@ import net.libraum.platypus.entity.ModEntities;
 import net.libraum.platypus.entity.custom.PlatypusEntity;
 import net.libraum.platypus.items.ModItemGroups;
 import net.libraum.platypus.items.ModItems;
+import net.libraum.platypus.sound.ModSounds;
 import net.libraum.platypus.util.ModCustomTrades;
 import net.libraum.platypus.util.ModLootTableModifiers;
 import net.libraum.platypus.world.gen.ModWorldGeneration;
@@ -26,6 +27,8 @@ public class PlatypusMod implements ModInitializer {
 
 		ModCustomTrades.registerCustomTrades();
 		ModLootTableModifiers.modifyLootTables();
+
+		ModSounds.registerSounds();
 
 		FabricDefaultAttributeRegistry.register(ModEntities.PLATYPUS, PlatypusEntity.createPlatypusAttributes());
 	}
