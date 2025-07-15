@@ -1,0 +1,6 @@
+{
+  "parent": "platypodes:item/platypus_bucket",
+  "textures": {
+    "layer0": "platypodes:item/platypus_bucket_blue"
+  }
+}
