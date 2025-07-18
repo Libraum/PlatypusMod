@@ -23,7 +23,7 @@ public class ModModelProvider extends FabricModelProvider {
     public void generateItemModels(ItemModelGenerator itemModelGenerator) {
         itemModelGenerator.register(ModItems.PLATYPUS_SPAWN_EGG,
                 new Model(Optional.of(new Identifier("item/template_spawn_egg")), Optional.empty()));
-        itemModelGenerator.register(ModItems.PLATYPUS_BUCKET, Models.GENERATED);
+        //itemModelGenerator.register(ModItems.PLATYPUS_BUCKET, Models.GENERATED);
         itemModelGenerator.register(ModItems.YABBY, Models.GENERATED);
     }
 }

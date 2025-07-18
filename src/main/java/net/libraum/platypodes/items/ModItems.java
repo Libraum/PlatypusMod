@@ -5,6 +5,7 @@ import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroupEntries;
 import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.libraum.platypodes.Platypodes;
 import net.libraum.platypodes.entity.ModEntities;
+import net.libraum.platypodes.items.custom.PlatypusBucketItem;
 import net.libraum.platypodes.sound.ModSounds;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
@@ -20,7 +21,7 @@ public class ModItems {
             new SpawnEggItem(ModEntities.PLATYPUS, 0x4a2e1b, 0x31373e, new FabricItemSettings()));
 
     public static final Item PLATYPUS_BUCKET = registerItem("platypus_bucket",
-            new EntityBucketItem(ModEntities.PLATYPUS, Fluids.WATER, ModSounds.ITEM_BUCKET_EMPTY_PLATYPUS, new Item.Settings().maxCount(1)));
+            new PlatypusBucketItem(ModEntities.PLATYPUS, Fluids.WATER, ModSounds.ITEM_BUCKET_EMPTY_PLATYPUS, new Item.Settings().maxCount(1)));
 
     public static final Item YABBY = registerItem("yabby",
             new Item(new FabricItemSettings()));
@@ -33,9 +34,7 @@ public class ModItems {
         entries.add(PLATYPUS_SPAWN_EGG);
     }
 
-    private static void addItemsToToolsItemGroup(FabricItemGroupEntries entries) {
-        entries.add(PLATYPUS_BUCKET);
-    }
+    private static void addItemsToToolsItemGroup(FabricItemGroupEntries entries) { entries.add(PLATYPUS_BUCKET); }
 
     private static void addItemsToIngredientItemGroup(FabricItemGroupEntries entries) {
         entries.add(YABBY);

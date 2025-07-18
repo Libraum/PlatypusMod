@@ -6,25 +6,25 @@
   "overrides": [
     {
       "predicate": {
-        "platypodes:variant": 1
+        "platypodes:variant": 0.25
       },
       "model": "platypodes:item/platypus_bucket_wild"
     },
     {
       "predicate": {
-        "platypodes:variant": 2
+        "platypodes:variant": 0.50
       },
       "model": "platypodes:item/platypus_bucket_gold"
     },
     {
       "predicate": {
-        "platypodes:variant": 3
+        "platypodes:variant": 0.75
       },
       "model": "platypodes:item/platypus_bucket_cyan"
     },
     {
       "predicate": {
-        "platypodes:variant": 4
+        "platypodes:variant": 1
       },
       "model": "platypodes:item/platypus_bucket_blue"
     }
