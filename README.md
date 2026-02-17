@@ -10,6 +10,7 @@ Platypodes is a lightweight, standalone mod that adds Platypus to Minecraft!
 #### Bucket of Platypus
 - Acquired by using a water bucket on a Platypus
 - Easily transport Platypus
+- 4 variant textures
 #### Platypus Spawn Egg
 - Spawn a Platypus
 #### Yabby
