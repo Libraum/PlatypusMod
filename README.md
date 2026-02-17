@@ -1,4 +1,4 @@
-Platypodes is a lightweight, standalone mod that adds a Platypus mob to Minecraft!
+Platypodes is a lightweight, standalone mod that adds Platypus to Minecraft!
 ## Features
 #### Platypus
 - Clone of the Axolotl
