@@ -1,0 +1,32 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "platypusmod:item/platypus_bucket"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "platypusmod:variant": 0.25
+      },
+      "model": "platypusmod:item/platypus_bucket_wild"
+    },
+    {
+      "predicate": {
+        "platypusmod:variant": 0.50
+      },
+      "model": "platypusmod:item/platypus_bucket_gold"
+    },
+    {
+      "predicate": {
+        "platypusmod:variant": 0.75
+      },
+      "model": "platypusmod:item/platypus_bucket_cyan"
+    },
+    {
+      "predicate": {
+        "platypusmod:variant": 1
+      },
+      "model": "platypusmod:item/platypus_bucket_blue"
+    }
+  ]
+}
