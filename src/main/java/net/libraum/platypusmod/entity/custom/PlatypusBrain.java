@@ -35,7 +35,7 @@ public class PlatypusBrain {
                 0,
                 ImmutableList.of(
                         new LookAroundTask(45, 90),
-                        new WanderAroundTask(),
+                        //new WanderAroundTask(),
                         new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS)
                 )
         );
@@ -46,7 +46,7 @@ public class PlatypusBrain {
                 Activity.IDLE,
                 ImmutableList.of(
                         Pair.of(0, LookAtMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
-                        Pair.of(1, new BreedTask(ModEntities.PLATYPUS, 0.2F)),
+                        Pair.of(1, new BreedTask(ModEntities.PLATYPUS)),
                         Pair.of(
                                 2,
                                 new RandomTask<>(

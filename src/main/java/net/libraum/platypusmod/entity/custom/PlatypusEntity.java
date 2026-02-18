@@ -11,6 +11,7 @@ import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
+import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -50,10 +51,10 @@ public class PlatypusEntity extends AxolotlEntity {
         return stack.isOf(ModItems.YABBY);
     }
 
-    @Override
-    protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
-        return PlatypusBrain.create(Brain.createProfile(MEMORY_MODULES, SENSORS).deserialize(dynamic));
-    }
+//    @Override
+//    protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
+//        return PlatypusBrain.create(Brain.createProfile(MEMORY_MODULES, SENSORS).deserialize(dynamic));
+//    }
 
     @Nullable
     @Override

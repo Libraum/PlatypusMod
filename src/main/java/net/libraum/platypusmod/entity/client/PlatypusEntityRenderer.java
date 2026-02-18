@@ -8,11 +8,11 @@ import net.minecraft.entity.passive.AxolotlEntity;
 import net.minecraft.util.Identifier;
 
 public class PlatypusEntityRenderer extends MobEntityRenderer<PlatypusEntity, PlatypusEntityModel<PlatypusEntity>> {
-    private static final Identifier LUCY_TEXTURE = new Identifier(PlatypusMod.MOD_ID, "textures/entity/platypus/platypus_lucy.png");
-    private static final Identifier WILD_TEXTURE = new Identifier(PlatypusMod.MOD_ID, "textures/entity/platypus/platypus_wild.png");
-    private static final Identifier GOLD_TEXTURE = new Identifier(PlatypusMod.MOD_ID, "textures/entity/platypus/platypus_gold.png");
-    private static final Identifier CYAN_TEXTURE = new Identifier(PlatypusMod.MOD_ID, "textures/entity/platypus/platypus_cyan.png");
-    private static final Identifier BLUE_TEXTURE = new Identifier(PlatypusMod.MOD_ID, "textures/entity/platypus/platypus_blue.png");
+    private static final Identifier LUCY_TEXTURE = Identifier.of(PlatypusMod.MOD_ID, "textures/entity/platypus/platypus_lucy.png");
+    private static final Identifier WILD_TEXTURE = Identifier.of(PlatypusMod.MOD_ID, "textures/entity/platypus/platypus_wild.png");
+    private static final Identifier GOLD_TEXTURE = Identifier.of(PlatypusMod.MOD_ID, "textures/entity/platypus/platypus_gold.png");
+    private static final Identifier CYAN_TEXTURE = Identifier.of(PlatypusMod.MOD_ID, "textures/entity/platypus/platypus_cyan.png");
+    private static final Identifier BLUE_TEXTURE = Identifier.of(PlatypusMod.MOD_ID, "textures/entity/platypus/platypus_blue.png");
 
     public PlatypusEntityRenderer(EntityRendererFactory.Context context) {
         super(context, new PlatypusEntityModel<>(context.getPart(ModModelLayers.PLATYPUS)), 0.5f);

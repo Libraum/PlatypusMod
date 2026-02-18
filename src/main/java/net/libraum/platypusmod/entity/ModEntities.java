@@ -12,7 +12,7 @@ import net.minecraft.util.Identifier;
 
 public class ModEntities {
     public static final EntityType<PlatypusEntity> PLATYPUS = Registry.register(Registries.ENTITY_TYPE,
-            new Identifier(PlatypusMod.MOD_ID, "platypus"),
+            Identifier.of(PlatypusMod.MOD_ID, "platypus"),
             FabricEntityTypeBuilder.create(SpawnGroup.AXOLOTLS, PlatypusEntity::new)
                     .dimensions(EntityDimensions.fixed(0.8f,0.4f)).build());
     public static void registerModEntities() {

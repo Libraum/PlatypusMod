@@ -11,8 +11,9 @@ public class PlatypusBucketItem extends EntityBucketItem {
     public PlatypusBucketItem(EntityType<?> type, Fluid fluid, SoundEvent emptyingSound, Settings settings) {
         super(type, fluid, emptyingSound, settings);
     }
-    public static float getVariant(ItemStack stack) {
-        NbtCompound tag = stack.getOrCreateNbt();
-        return ((float) tag.getInt("Variant") / 4);
-    }
+//    public static float getVariant(ItemStack stack) {
+//        //NbtCompound tag = stack.getOrCreateNbt();
+//        NbtCompound tag = (NbtCompound) stack.getComponents();
+//        return ((float) tag.getInt("Variant") / 4);
+//    }
 }

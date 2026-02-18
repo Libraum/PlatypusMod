@@ -19,7 +19,7 @@ public class ModSounds {
     public static final SoundEvent ITEM_BUCKET_EMPTY_PLATYPUS = registerSoundEvent("item.bucket.empty_platypus");
 
     private static SoundEvent registerSoundEvent(String name) {
-        Identifier id = new Identifier(PlatypusMod.MOD_ID, name);
+        Identifier id = Identifier.of(PlatypusMod.MOD_ID, name);
         return Registry.register(Registries.SOUND_EVENT, id, SoundEvent.of(id));
     }
 

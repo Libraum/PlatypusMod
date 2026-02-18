@@ -6,5 +6,5 @@ import net.minecraft.util.Identifier;
 
 public class ModModelLayers {
     public static final EntityModelLayer PLATYPUS =
-            new EntityModelLayer(new Identifier(PlatypusMod.MOD_ID, "platypus"), "main");
+            new EntityModelLayer(Identifier.of(PlatypusMod.MOD_ID, "platypus"), "main");
 }

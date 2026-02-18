@@ -12,11 +12,11 @@ import net.minecraft.util.Identifier;
 
 public class ModLootTableModifiers {
     private static final Identifier Village_Fisher_Chest_ID =
-            new Identifier("minecraft", "chests/village/village_fisher");
+            Identifier.of("minecraft", "chests/village/village_fisher");
 
     public static void modifyLootTables() {
-                LootTableEvents.MODIFY.register((resourceManager, lootManager, id, tableBuilder, source) -> {
-            if(Village_Fisher_Chest_ID.equals(id)) {
+                LootTableEvents.MODIFY.register((key, tableBuilder, source) -> {
+            if(Village_Fisher_Chest_ID.equals(key.getValue())) {
                 LootPool.Builder poolBuilder = LootPool.builder()
                         .rolls(ConstantLootNumberProvider.create(1))
                         .conditionally(RandomChanceLootCondition.builder(0.33f))

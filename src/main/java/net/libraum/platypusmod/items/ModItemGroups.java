@@ -12,7 +12,7 @@ import net.minecraft.util.Identifier;
 
 public class ModItemGroups {
     public static final ItemGroup PLATYPUS_GROUP = Registry.register(Registries.ITEM_GROUP,
-            new Identifier(PlatypusMod.MOD_ID,"platypusmod"),
+            Identifier.of(PlatypusMod.MOD_ID,"platypusmod"),
             FabricItemGroup.builder().displayName(Text.translatable("itemgroup.platypusmod"))
                     .icon(() -> new ItemStack(ModItems.PLATYPUS_BUCKET)).entries((displayContext, entries) -> {
                         entries.add(ModItems.PLATYPUS_SPAWN_EGG);

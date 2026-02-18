@@ -8,7 +8,7 @@ import net.minecraft.util.Identifier;
 
 public class ModModelPredicates {
     public static void registerModelPredicates() {
-        ModelPredicateProviderRegistry.register(ModItems.PLATYPUS_BUCKET, new Identifier(PlatypusMod.MOD_ID, "variant"),
-                (stack, world, entity, seed) -> PlatypusBucketItem.getVariant(stack));
+//        ModelPredicateProviderRegistry.register(ModItems.PLATYPUS_BUCKET, Identifier.of(PlatypusMod.MOD_ID, "variant"),
+//                (stack, world, entity, seed) -> PlatypusBucketItem.getVariant(stack));
     }
 }
