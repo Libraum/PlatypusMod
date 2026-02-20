@@ -6,9 +6,9 @@ import net.libraum.platypusmod.entity.ModEntities;
 import net.libraum.platypusmod.items.custom.PlatypusBucketItem;
 import net.libraum.platypusmod.sound.ModSounds;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
-import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
@@ -21,7 +21,7 @@ public class ModItems {
             new SpawnEggItem(ModEntities.PLATYPUS, 0x4a2e1b, 0x31373e, new Item.Settings()));
 
     public static final Item PLATYPUS_BUCKET = registerItem("platypus_bucket",
-            new PlatypusBucketItem(ModEntities.PLATYPUS, Fluids.WATER, ModSounds.ITEM_BUCKET_EMPTY_PLATYPUS, (new Item.Settings().maxCount(1).component(DataComponentTypes.BUCKET_ENTITY_DATA, NbtCompound.DEFAULT))));
+            new PlatypusBucketItem(ModEntities.PLATYPUS, Fluids.WATER, ModSounds.ITEM_BUCKET_EMPTY_PLATYPUS, new Item.Settings().maxCount(1).component(DataComponentTypes.BUCKET_ENTITY_DATA, NbtComponent.DEFAULT)));
 
     public static final Item YABBY = registerItem("yabby",
             new Item(new Item.Settings()));

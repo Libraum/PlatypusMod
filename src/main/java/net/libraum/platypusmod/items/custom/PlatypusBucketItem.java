@@ -1,5 +1,7 @@
 package net.libraum.platypusmod.items.custom;
 
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.NbtComponent;
 import net.minecraft.entity.EntityType;
 import net.minecraft.fluid.Fluid;
 import net.minecraft.item.EntityBucketItem;
@@ -13,7 +15,7 @@ public class PlatypusBucketItem extends EntityBucketItem {
     }
 
     public static float getVariant(ItemStack stack) {
-        NbtCompound tag = stack.getOrCreateNbt();
-        return ((float) tag.getInt("Variant") / 4);
+        NbtCompound nbt = stack.get(DataComponentTypes.BUCKET_ENTITY_DATA).copyNbt();
+        return ((float) nbt.getInt("Variant") / 4);
     }
 }
