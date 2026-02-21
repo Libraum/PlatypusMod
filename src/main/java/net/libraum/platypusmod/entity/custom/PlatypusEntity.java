@@ -21,6 +21,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,15 +51,32 @@ public class PlatypusEntity extends AxolotlEntity {
         return stack.isOf(ModItems.YABBY);
     }
 
-    @Override
-    protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
-        return PlatypusBrain.create(Brain.createProfile(MEMORY_MODULES, SENSORS).deserialize(dynamic));
+//    @Override
+//    protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
+//        return PlatypusBrain.create(Brain.createProfile(MEMORY_MODULES, SENSORS).deserialize(dynamic));
+//    }
+
+    private static boolean shouldBabyBeDifferent(Random random) {
+        return random.nextInt(1200) == 0;
     }
 
     @Nullable
     @Override
     public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-        return ModEntities.PLATYPUS.create(world);
+        PlatypusEntity platypusEntity = (PlatypusEntity) ModEntities.PLATYPUS.create(world);
+        if (platypusEntity != null) {
+            Variant variant;
+            if (shouldBabyBeDifferent(this.random)) {
+                variant = PlatypusEntity.Variant.getRandomUnnatural(this.random);
+            } else {
+                variant = this.random.nextBoolean() ? this.getVariant() : ((PlatypusEntity)entity).getVariant();
+            }
+
+            platypusEntity.setVariant(variant);
+            platypusEntity.setPersistent();
+        }
+
+        return platypusEntity;
     }
 
     @Override
