@@ -1,17 +1,14 @@
 package net.libraum.platypusmod.entity.custom;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.serialization.Dynamic;
 import net.libraum.platypusmod.entity.ModEntities;
 import net.libraum.platypusmod.items.ModItems;
 import net.libraum.platypusmod.sound.ModSounds;
 import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
-import net.minecraft.entity.ai.goal.WanderAroundGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -22,6 +19,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.recipe.Ingredient;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
@@ -56,10 +54,27 @@ public class PlatypusEntity extends AxolotlEntity {
 //        return PlatypusBrain.create(Brain.createProfile(MEMORY_MODULES, SENSORS).deserialize(dynamic));
 //    }
 
+    private static boolean shouldBabyBeDifferent(Random random) {
+        return random.nextInt(1200) == 0;
+    }
+
     @Nullable
     @Override
     public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-        return ModEntities.PLATYPUS.create(world);
+        PlatypusEntity platypusEntity = (PlatypusEntity) ModEntities.PLATYPUS.create(world);
+        if (platypusEntity != null) {
+            Variant variant;
+            if (shouldBabyBeDifferent(this.random)) {
+                variant = PlatypusEntity.Variant.getRandomUnnatural(this.random);
+            } else {
+                variant = this.random.nextBoolean() ? this.getVariant() : ((PlatypusEntity)entity).getVariant();
+            }
+
+            platypusEntity.setVariant(variant);
+            platypusEntity.setPersistent();
+        }
+
+        return platypusEntity;
     }
 
     @Override
