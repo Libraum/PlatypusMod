@@ -35,8 +35,8 @@ public class PlatypusEntity extends AxolotlEntity {
 
     @Override
     protected void initGoals() {
-        this.goalSelector.add(1, new AnimalMateGoal(this, 1.0));
-        this.goalSelector.add(2, new TemptGoal(this,0.5, Ingredient.ofItems(ModItems.YABBY),false));
+        this.goalSelector.add(1, new AnimalMateGoal(this, 0.2));
+        this.goalSelector.add(2, new TemptGoal(this,0.3, Ingredient.ofItems(ModItems.YABBY),false));
     }
 
     public static DefaultAttributeContainer.Builder createPlatypusAttributes() {
