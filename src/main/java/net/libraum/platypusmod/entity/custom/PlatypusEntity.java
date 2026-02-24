@@ -1,14 +1,16 @@
 package net.libraum.platypusmod.entity.custom;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Dynamic;
 import net.libraum.platypusmod.entity.ModEntities;
 import net.libraum.platypusmod.items.ModItems;
 import net.libraum.platypusmod.sound.ModSounds;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.ai.brain.Brain;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
-import net.minecraft.entity.ai.goal.AnimalMateGoal;
-import net.minecraft.entity.ai.goal.TemptGoal;
+import net.minecraft.entity.ai.brain.task.SeekWaterTask;
+import net.minecraft.entity.ai.goal.*;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.damage.DamageSource;
@@ -61,7 +63,7 @@ public class PlatypusEntity extends AxolotlEntity {
     @Nullable
     @Override
     public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-        PlatypusEntity platypusEntity = (PlatypusEntity) ModEntities.PLATYPUS.create(world);
+        PlatypusEntity platypusEntity = ModEntities.PLATYPUS.create(world);
         if (platypusEntity != null) {
             Variant variant;
             if (shouldBabyBeDifferent(this.random)) {
@@ -82,9 +84,22 @@ public class PlatypusEntity extends AxolotlEntity {
         return new ItemStack(ModItems.PLATYPUS_BUCKET);
     }
 
-    /**
-     * Sound Events
-    */
+
+    /** Prevent suffocating on land */
+    @Override
+    protected void tickAir(int air) {
+        if (this.isAlive() && !this.isWet()) {
+            this.setAir(air - 1);
+            if (this.getAir() == -20) {
+                this.setAir(0);
+                //this.damage(this.getDamageSources().dryOut(), 2.0F);
+            }
+        } else {
+            this.setAir(this.getMaxAir());
+        }
+    }
+
+    /** Sound Events */
     @Nullable
     @Override
     protected SoundEvent getAmbientSound() {

@@ -35,7 +35,6 @@ public class PlatypusBrain {
                 0,
                 ImmutableList.of(
                         new LookAroundTask(45, 90),
-                        //new WanderAroundTask(),
                         new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS)
                 )
         );
