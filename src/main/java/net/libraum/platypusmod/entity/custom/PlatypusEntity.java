@@ -84,9 +84,21 @@ public class PlatypusEntity extends AxolotlEntity {
         return new ItemStack(ModItems.PLATYPUS_BUCKET);
     }
 
-    /**
-     * Sound Events
-    */
+    /** Prevent suffocating on land */
+    @Override
+    protected void tickAir(int air) {
+        if (this.isAlive() && !this.isWet()) {
+            this.setAir(air - 1);
+            if (this.getAir() == -20) {
+                this.setAir(0);
+                //this.damage(this.getDamageSources().dryOut(), 2.0F);
+            }
+        } else {
+            this.setAir(this.getMaxAir());
+        }
+    }
+
+    /** Sound Events */
     @Nullable
     @Override
     protected SoundEvent getAmbientSound() {
