@@ -63,7 +63,7 @@ public class PlatypusEntity extends AxolotlEntity {
     @Nullable
     @Override
     public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
-        PlatypusEntity platypusEntity = (PlatypusEntity) ModEntities.PLATYPUS.create(world);
+        PlatypusEntity platypusEntity = ModEntities.PLATYPUS.create(world);
         if (platypusEntity != null) {
             Variant variant;
             if (shouldBabyBeDifferent(this.random)) {
