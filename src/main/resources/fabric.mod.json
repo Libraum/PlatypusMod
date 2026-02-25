@@ -1,9 +1,9 @@
 {
 	"schemaVersion": 1,
-	"id": "platypusmod",
-	"version": "1.0+1.20.1",
-	"name": "Platypus Mod",
-	"description": "Platypus Mod is a lightweight, standalone mod that adds Platypus to Minecraft!",
+	"id": "platypodes",
+	"version": "1.1+1.20.1",
+	"name": "Platypodes",
+	"description": "Platypodes is a lightweight, standalone mod that adds Platypus to Minecraft!",
 	"authors": [
 		"Libraum"
 	],
@@ -12,21 +12,21 @@
 		"sources": "https://github.com/FabricMC/fabric-example-mod"
 	},
 	"license": "MIT",
-	"icon": "assets/platypusmod/icon.png",
+	"icon": "assets/platypodes/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-			"net.libraum.platypusmod.PlatypusMod"
+			"net.libraum.platypodes.Platypodes"
 		],
 		"client": [
-			"net.libraum.platypusmod.PlatypusModClient"
+			"net.libraum.platypodes.PlatypodesClient"
 		],
 		"fabric-datagen": [
-			"net.libraum.platypusmod.PlatypusModDataGenerator"
+			"net.libraum.platypodes.PlatypodesDataGenerator"
 		]
 	},
 	"mixins": [
-		"platypusmod.mixins.json"
+		"platypodes.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.15.11",
