@@ -1,6 +1,0 @@
-{
-  "parent": "platypusmod:item/platypus_bucket",
-  "textures": {
-    "layer0": "platypusmod:item/platypus_bucket_gold"
-  }
-}
