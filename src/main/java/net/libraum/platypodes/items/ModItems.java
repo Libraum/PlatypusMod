@@ -13,9 +13,8 @@ import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
 
 public class ModItems {
-    /**
-     * Items
-     */
+
+    /** Items */
     public static final Item PLATYPUS_SPAWN_EGG = registerItem("platypus_spawn_egg",
             new SpawnEggItem(ModEntities.PLATYPUS, 0x4a2e1b, 0x31373e, new FabricItemSettings()));
 
@@ -25,11 +24,7 @@ public class ModItems {
     public static final Item YABBY = registerItem("yabby",
             new Item(new FabricItemSettings()));
 
-    /**
-     *
-     * Item Groups
-     */
-
+    /** Item Groups */
     private static Item registerItem(String name, Item item) {
         return Registry.register(Registries.ITEM, new Identifier(Platypodes.MOD_ID, name), item);
     }

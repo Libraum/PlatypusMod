@@ -1,0 +1,20 @@
+{
+  "variants": {
+
+    "facing=north": {
+      "model": "platypodes:block/platypus_burrow"
+    },
+    "facing=east": {
+      "model": "platypodes:block/platypus_burrow",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "platypodes:block/platypus_burrow",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "platypodes:block/platypus_burrow",
+      "y": 270
+    }
+  }
+}

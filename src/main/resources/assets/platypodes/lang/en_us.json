@@ -5,6 +5,8 @@
   "item.platypodes.platypus_bucket": "Bucket of Platypus",
   "item.platypodes.yabby": "Yabby",
 
+  "block.platypodes.platypus_burrow": "Platypus Burrow",
+
   "itemgroup.platypodes": "Platypodes",
 
   "subtitles.entity.platypus.attack": "Platypus attacks",

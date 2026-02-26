@@ -3,6 +3,8 @@ package net.libraum.platypodes;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
+import net.libraum.platypodes.blocks.ModBlocks;
+import net.libraum.platypodes.blocks.entity.ModBlockEntities;
 import net.libraum.platypodes.entity.ModEntities;
 import net.libraum.platypodes.entity.custom.PlatypusEntity;
 import net.libraum.platypodes.items.ModItemGroups;
@@ -21,10 +23,14 @@ public class Platypodes implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		ModItemGroups.registerItemGroups();
-		ModItems.registerModItems();
-		ModEntities.registerModEntities();
-		ModWorldGeneration.generateModWorldGen();
 
+		ModItems.registerModItems();
+		ModBlocks.registerModBlocks();
+
+		ModBlockEntities.registerBlockEntities();
+		ModEntities.registerModEntities();
+
+		ModWorldGeneration.generateModWorldGen();
 		ModCustomTrades.registerCustomTrades();
 		ModLootTableModifiers.modifyLootTables();
 

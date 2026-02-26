@@ -2,6 +2,7 @@ package net.libraum.platypodes.items;
 
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.libraum.platypodes.Platypodes;
+import net.libraum.platypodes.blocks.ModBlocks;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
@@ -18,6 +19,8 @@ public class ModItemGroups {
                         entries.add(ModItems.PLATYPUS_SPAWN_EGG);
                         entries.add(ModItems.PLATYPUS_BUCKET);
                         entries.add(ModItems.YABBY);
+
+                        entries.add(ModBlocks.PLATYPUS_BURROW);
                     }).build());
     
     public static void registerItemGroups() {
