@@ -4,28 +4,29 @@ import com.google.common.collect.ImmutableList;
 import net.libraum.platypodes.entity.ModEntities;
 import net.libraum.platypodes.items.ModItems;
 import net.libraum.platypodes.sound.ModSounds;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.ai.brain.sensor.Sensor;
-import net.minecraft.entity.ai.brain.sensor.SensorType;
-import net.minecraft.entity.ai.goal.AnimalMateGoal;
-import net.minecraft.entity.ai.goal.BreatheAirGoal;
-import net.minecraft.entity.ai.goal.TemptGoal;
-import net.minecraft.entity.attribute.DefaultAttributeContainer;
-import net.minecraft.entity.attribute.EntityAttributes;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.mob.MobEntity;
-import net.minecraft.entity.passive.AxolotlEntity;
-import net.minecraft.entity.passive.PassiveEntity;
-import net.minecraft.item.ItemStack;
-import net.minecraft.recipe.Ingredient;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.math.random.Random;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.sensing.Sensor;
+import net.minecraft.world.entity.ai.sensing.SensorType;
+import net.minecraft.world.entity.ai.goal.BreedGoal;
+import net.minecraft.world.entity.ai.goal.BreathAirGoal;
+import net.minecraft.world.entity.ai.goal.TemptGoal;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.animal.axolotl.Axolotl;
+import net.minecraft.world.entity.AgeableMob;
+import net.minecraft.world.entity.animal.axolotl.Axolotl.Variant;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
-public class PlatypusEntity extends AxolotlEntity {
-    public PlatypusEntity(EntityType<? extends PlatypusEntity> entityType, World world) {
+public class PlatypusEntity extends Axolotl {
+    public PlatypusEntity(EntityType<? extends PlatypusEntity> entityType, Level world) {
         super(entityType, world);
     }
     protected static final ImmutableList<? extends SensorType<? extends Sensor<? super PlatypusEntity>>> SENSORS = ImmutableList.of(
@@ -33,22 +34,22 @@ public class PlatypusEntity extends AxolotlEntity {
     );
 
     @Override
-    protected void initGoals() {
-        this.goalSelector.add(0, new BreatheAirGoal(this));
-        this.goalSelector.add(1, new AnimalMateGoal(this, 0.2));
-        this.goalSelector.add(2, new TemptGoal(this,0.3, Ingredient.ofItems(ModItems.YABBY),false));
+    protected void registerGoals() {
+        this.goalSelector.addGoal(0, new BreathAirGoal(this));
+        this.goalSelector.addGoal(1, new BreedGoal(this, 0.2));
+        this.goalSelector.addGoal(2, new TemptGoal(this,0.3, Ingredient.of(ModItems.YABBY),false));
     }
 
-    public static DefaultAttributeContainer.Builder createPlatypusAttributes() {
-        return MobEntity.createMobAttributes()
-                .add(EntityAttributes.GENERIC_MAX_HEALTH, 14)
-                .add(EntityAttributes.GENERIC_MOVEMENT_SPEED, 1.0)
-                .add(EntityAttributes.GENERIC_ATTACK_DAMAGE, 2.0);
+    public static AttributeSupplier.Builder createPlatypusAttributes() {
+        return Mob.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, 14)
+                .add(Attributes.MOVEMENT_SPEED, 1.0)
+                .add(Attributes.ATTACK_DAMAGE, 2.0);
     }
 
     @Override
-    public boolean isBreedingItem(ItemStack stack) {
-        return stack.isOf(ModItems.YABBY);
+    public boolean isFood(ItemStack stack) {
+        return stack.is(ModItems.YABBY);
     }
 
 //    @Override
@@ -56,45 +57,45 @@ public class PlatypusEntity extends AxolotlEntity {
 //        return PlatypusBrain.create(Brain.createProfile(MEMORY_MODULES, SENSORS).deserialize(dynamic));
 //    }
 
-    private static boolean shouldBabyBeDifferent(Random random) {
+    private static boolean shouldBabyBeDifferent(RandomSource random) {
         return random.nextInt(1200) == 0;
     }
 
     @Nullable
     @Override
-    public PassiveEntity createChild(ServerWorld world, PassiveEntity entity) {
+    public AgeableMob getBreedOffspring(ServerLevel world, AgeableMob entity) {
         PlatypusEntity platypusEntity = ModEntities.PLATYPUS.create(world);
         if (platypusEntity != null) {
             Variant variant;
             if (shouldBabyBeDifferent(this.random)) {
-                variant = PlatypusEntity.Variant.getRandomUnnatural(this.random);
+                variant = PlatypusEntity.Variant.getRareSpawnVariant(this.random);
             } else {
                 variant = this.random.nextBoolean() ? this.getVariant() : ((PlatypusEntity)entity).getVariant();
             }
 
             platypusEntity.setVariant(variant);
-            platypusEntity.setPersistent();
+            platypusEntity.setPersistenceRequired();
         }
 
         return platypusEntity;
     }
 
     @Override
-    public ItemStack getBucketItem() {
+    public ItemStack getBucketItemStack() {
         return new ItemStack(ModItems.PLATYPUS_BUCKET);
     }
 
     /** Prevent suffocating on land */
     @Override
-    protected void tickAir(int air) {
-        if (this.isAlive() && !this.isWet()) {
-            this.setAir(air - 1);
-            if (this.getAir() == -20) {
-                this.setAir(0);
+    protected void handleAirSupply(int air) {
+        if (this.isAlive() && !this.isInWaterRainOrBubble()) {
+            this.setAirSupply(air - 1);
+            if (this.getAirSupply() == -20) {
+                this.setAirSupply(0);
                 //this.damage(this.getDamageSources().dryOut(), 2.0F);
             }
         } else {
-            this.setAir(this.getMaxAir());
+            this.setAirSupply(this.getMaxAirSupply());
         }
     }
 
@@ -102,7 +103,7 @@ public class PlatypusEntity extends AxolotlEntity {
     @Nullable
     @Override
     protected SoundEvent getAmbientSound() {
-        return this.isTouchingWater() ? ModSounds.ENTITY_PLATYPUS_IDLE_WATER : ModSounds.ENTITY_PLATYPUS_IDLE_AIR;
+        return this.isInWater() ? ModSounds.ENTITY_PLATYPUS_IDLE_WATER : ModSounds.ENTITY_PLATYPUS_IDLE_AIR;
     }
 
     @Nullable
@@ -119,7 +120,7 @@ public class PlatypusEntity extends AxolotlEntity {
 
     @Nullable
     @Override
-    protected SoundEvent getSplashSound() {
+    protected SoundEvent getSwimSplashSound() {
         return ModSounds.ENTITY_PLATYPUS_SPLASH;
     }
 
@@ -131,7 +132,7 @@ public class PlatypusEntity extends AxolotlEntity {
 
     @Nullable
     @Override
-    public SoundEvent getBucketFillSound() {
+    public SoundEvent getPickupSound() {
         return ModSounds.ITEM_BUCKET_FILL_PLATYPUS;
     }
 }

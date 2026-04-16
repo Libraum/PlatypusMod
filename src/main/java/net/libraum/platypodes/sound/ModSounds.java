@@ -1,10 +1,10 @@
 package net.libraum.platypodes.sound;
 
 import net.libraum.platypodes.Platypodes;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.Identifier;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.resources.ResourceLocation;
 
 public class ModSounds {
     public static final SoundEvent ENTITY_PLATYPUS_ATTACK = registerSoundEvent("entity.platypus.attack");
@@ -19,8 +19,8 @@ public class ModSounds {
     public static final SoundEvent ITEM_BUCKET_EMPTY_PLATYPUS = registerSoundEvent("item.bucket.empty_platypus");
 
     private static SoundEvent registerSoundEvent(String name) {
-        Identifier id = new Identifier(Platypodes.MOD_ID, name);
-        return Registry.register(Registries.SOUND_EVENT, id, SoundEvent.of(id));
+        ResourceLocation id = new ResourceLocation(Platypodes.MOD_ID, name);
+        return Registry.register(BuiltInRegistries.SOUND_EVENT, id, SoundEvent.createVariableRangeEvent(id));
     }
 
     public static void registerSounds() {

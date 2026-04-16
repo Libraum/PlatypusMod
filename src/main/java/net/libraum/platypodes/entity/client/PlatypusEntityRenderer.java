@@ -2,28 +2,28 @@ package net.libraum.platypodes.entity.client;
 
 import net.libraum.platypodes.Platypodes;
 import net.libraum.platypodes.entity.custom.PlatypusEntity;
-import net.minecraft.client.render.entity.EntityRendererFactory;
-import net.minecraft.client.render.entity.MobEntityRenderer;
-import net.minecraft.entity.passive.AxolotlEntity;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.renderer.entity.EntityRendererProvider;
+import net.minecraft.client.renderer.entity.MobRenderer;
+import net.minecraft.world.entity.animal.axolotl.Axolotl;
+import net.minecraft.resources.ResourceLocation;
 
-public class PlatypusEntityRenderer extends MobEntityRenderer<PlatypusEntity, PlatypusEntityModel<PlatypusEntity>> {
-    private static final Identifier LUCY_TEXTURE = new Identifier(Platypodes.MOD_ID, "textures/entity/platypus/platypus_lucy.png");
-    private static final Identifier WILD_TEXTURE = new Identifier(Platypodes.MOD_ID, "textures/entity/platypus/platypus_wild.png");
-    private static final Identifier GOLD_TEXTURE = new Identifier(Platypodes.MOD_ID, "textures/entity/platypus/platypus_gold.png");
-    private static final Identifier CYAN_TEXTURE = new Identifier(Platypodes.MOD_ID, "textures/entity/platypus/platypus_cyan.png");
-    private static final Identifier BLUE_TEXTURE = new Identifier(Platypodes.MOD_ID, "textures/entity/platypus/platypus_blue.png");
+public class PlatypusEntityRenderer extends MobRenderer<PlatypusEntity, PlatypusEntityModel<PlatypusEntity>> {
+    private static final ResourceLocation LUCY_TEXTURE = new ResourceLocation(Platypodes.MOD_ID, "textures/entity/platypus/platypus_lucy.png");
+    private static final ResourceLocation WILD_TEXTURE = new ResourceLocation(Platypodes.MOD_ID, "textures/entity/platypus/platypus_wild.png");
+    private static final ResourceLocation GOLD_TEXTURE = new ResourceLocation(Platypodes.MOD_ID, "textures/entity/platypus/platypus_gold.png");
+    private static final ResourceLocation CYAN_TEXTURE = new ResourceLocation(Platypodes.MOD_ID, "textures/entity/platypus/platypus_cyan.png");
+    private static final ResourceLocation BLUE_TEXTURE = new ResourceLocation(Platypodes.MOD_ID, "textures/entity/platypus/platypus_blue.png");
 
-    public PlatypusEntityRenderer(EntityRendererFactory.Context context) {
-        super(context, new PlatypusEntityModel<>(context.getPart(ModModelLayers.PLATYPUS)), 0.5f);
+    public PlatypusEntityRenderer(EntityRendererProvider.Context context) {
+        super(context, new PlatypusEntityModel<>(context.bakeLayer(ModModelLayers.PLATYPUS)), 0.5f);
     }
 
     @Override
-    public Identifier getTexture(PlatypusEntity platypusEntity) {
+    public ResourceLocation getTextureLocation(PlatypusEntity platypusEntity) {
         return getTexture(platypusEntity.getVariant());
     }
 
-    public Identifier getTexture(AxolotlEntity.Variant variant) {
+    public ResourceLocation getTexture(Axolotl.Variant variant) {
         return switch (variant) {
             case LUCY -> LUCY_TEXTURE;
             case WILD -> WILD_TEXTURE;

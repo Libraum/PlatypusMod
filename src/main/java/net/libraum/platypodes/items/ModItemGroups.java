@@ -2,22 +2,22 @@ package net.libraum.platypodes.items;
 
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.libraum.platypodes.Platypodes;
-import net.minecraft.item.ItemGroup;
-import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
-import net.minecraft.registry.Registry;
-import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.Registry;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 
 public class ModItemGroups {
-    public static final ItemGroup PLATYPUS_GROUP = Registry.register(Registries.ITEM_GROUP,
-            new Identifier(Platypodes.MOD_ID,"platypodes"),
-            FabricItemGroup.builder().displayName(Text.translatable("itemgroup.platypodes"))
-                    .icon(() -> new ItemStack(ModItems.PLATYPUS_BUCKET)).entries((displayContext, entries) -> {
-                        entries.add(ModItems.PLATYPUS_SPAWN_EGG);
-                        entries.add(ModItems.PLATYPUS_BUCKET);
-                        entries.add(ModItems.YABBY);
+    public static final CreativeModeTab PLATYPUS_GROUP = Registry.register(BuiltInRegistries.CREATIVE_MODE_TAB,
+            new ResourceLocation(Platypodes.MOD_ID,"platypodes"),
+            FabricItemGroup.builder().title(Component.translatable("itemgroup.platypodes"))
+                    .icon(() -> new ItemStack(ModItems.PLATYPUS_BUCKET)).displayItems((displayContext, entries) -> {
+                        entries.accept(ModItems.PLATYPUS_SPAWN_EGG);
+                        entries.accept(ModItems.PLATYPUS_BUCKET);
+                        entries.accept(ModItems.YABBY);
                     }).build());
     
     public static void registerItemGroups() {

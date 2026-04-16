@@ -3,11 +3,11 @@ package net.libraum.platypodes.datagen;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput;
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider;
 import net.libraum.platypodes.items.ModItems;
-import net.minecraft.data.client.BlockStateModelGenerator;
-import net.minecraft.data.client.ItemModelGenerator;
-import net.minecraft.data.client.Model;
-import net.minecraft.data.client.Models;
-import net.minecraft.util.Identifier;
+import net.minecraft.data.models.BlockModelGenerators;
+import net.minecraft.data.models.ItemModelGenerators;
+import net.minecraft.data.models.model.ModelTemplate;
+import net.minecraft.data.models.model.ModelTemplates;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
 
@@ -15,15 +15,15 @@ public class ModModelProvider extends FabricModelProvider {
     public ModModelProvider(FabricDataOutput output) { super(output); }
 
     @Override
-    public void generateBlockStateModels(BlockStateModelGenerator blockStateModelGenerator) {
+    public void generateBlockStateModels(BlockModelGenerators blockStateModelGenerator) {
 
     }
 
     @Override
-    public void generateItemModels(ItemModelGenerator itemModelGenerator) {
-        itemModelGenerator.register(ModItems.PLATYPUS_SPAWN_EGG,
-                new Model(Optional.of(new Identifier("item/template_spawn_egg")), Optional.empty()));
+    public void generateItemModels(ItemModelGenerators itemModelGenerator) {
+        itemModelGenerator.generateFlatItem(ModItems.PLATYPUS_SPAWN_EGG,
+                new ModelTemplate(Optional.of(new ResourceLocation("item/template_spawn_egg")), Optional.empty()));
         //itemModelGenerator.register(ModItems.PLATYPUS_BUCKET, Models.GENERATED);
-        itemModelGenerator.register(ModItems.YABBY, Models.GENERATED);
+        itemModelGenerator.generateFlatItem(ModItems.YABBY, ModelTemplates.FLAT_ITEM);
     }
 }
