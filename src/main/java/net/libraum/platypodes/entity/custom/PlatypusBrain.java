@@ -5,70 +5,81 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import net.libraum.platypodes.entity.ModEntities;
-import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.ai.brain.*;
-import net.minecraft.entity.ai.brain.task.*;
-import net.minecraft.entity.passive.AxolotlEntity;
-import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.intprovider.UniformIntProvider;
-import net.minecraft.world.World;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.ai.Brain;
+import net.minecraft.world.entity.ai.behavior.*;
+import net.minecraft.world.entity.ai.behavior.BabyFollowAdult;
+import net.minecraft.world.entity.ai.behavior.FollowTemptation;
+import net.minecraft.world.entity.ai.behavior.GateBehavior;
+import net.minecraft.world.entity.ai.behavior.PositionTracker;
+import net.minecraft.world.entity.ai.behavior.RandomStroll;
+import net.minecraft.world.entity.ai.behavior.SetWalkTargetFromLookTarget;
+import net.minecraft.world.entity.ai.behavior.TryFindWater;
+import net.minecraft.world.entity.ai.behavior.declarative.BehaviorBuilder;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.memory.MemoryStatus;
+import net.minecraft.world.entity.animal.axolotl.Axolotl;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.entity.schedule.Activity;
+import net.minecraft.world.level.Level;
 
 import java.util.Optional;
 
 public class PlatypusBrain {
-    private static final UniformIntProvider WALK_TOWARD_ADULT_RANGE = UniformIntProvider.create(5, 16);
+    private static final UniformInt WALK_TOWARD_ADULT_RANGE = UniformInt.of(5, 16);
 
     public static Brain<?> create(Brain<PlatypusEntity> brain) {
         addCoreActivities(brain);
         addIdleActivities(brain);
         brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
         brain.setDefaultActivity(Activity.IDLE);
-        brain.resetPossibleActivities();
+        brain.useDefaultActivity();
         return brain;
     }
 
     private static void addCoreActivities(Brain<PlatypusEntity> brain) {
-        brain.setTaskList(
+        brain.addActivity(
                 Activity.CORE,
                 0,
                 ImmutableList.of(
-                        new LookAroundTask(45, 90),
-                        new TemptationCooldownTask(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS)
+                        new LookAtTargetSink(45, 90),
+                        new CountDownCooldownTicks(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS)
                 )
         );
     }
 
     private static void addIdleActivities(Brain<PlatypusEntity> brain) {
-        brain.setTaskList(
+        brain.addActivity(
                 Activity.IDLE,
                 ImmutableList.of(
-                        Pair.of(0, LookAtMobWithIntervalTask.follow(EntityType.PLAYER, 6.0F, UniformIntProvider.create(30, 60))),
-                        Pair.of(1, new BreedTask(ModEntities.PLATYPUS)),
+                        Pair.of(0, SetEntityLookTargetSometimes.create(EntityType.PLAYER, 6.0F, UniformInt.of(30, 60))),
+                        Pair.of(1, new AnimalMakeLove(ModEntities.PLATYPUS)),
                         Pair.of(
                                 2,
-                                new RandomTask<>(
+                                new RunOne<>(
                                         ImmutableList.of(
-                                                Pair.of(new TemptTask(PlatypusBrain::getTemptedSpeed), 1),
-                                                Pair.of(WalkTowardClosestAdultTask.create(WALK_TOWARD_ADULT_RANGE, PlatypusBrain::getAdultFollowingSpeed), 1)
+                                                Pair.of(new FollowTemptation(PlatypusBrain::getTemptedSpeed), 1),
+                                                Pair.of(BabyFollowAdult.create(WALK_TOWARD_ADULT_RANGE, PlatypusBrain::getAdultFollowingSpeed), 1)
                                         )
                                 )
                         ),
-                        Pair.of(3, SeekWaterTask.create(6, 0.15F)),
+                        Pair.of(3, TryFindWater.create(6, 0.15F)),
                         Pair.of(
                                 4,
-                                new CompositeTask<>(
-                                        ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryModuleState.VALUE_ABSENT),
+                                new GateBehavior<>(
+                                        ImmutableMap.of(MemoryModuleType.WALK_TARGET, MemoryStatus.VALUE_ABSENT),
                                         ImmutableSet.of(),
-                                        CompositeTask.Order.ORDERED,
-                                        CompositeTask.RunMode.TRY_ALL,
+                                        GateBehavior.OrderPolicy.ORDERED,
+                                        GateBehavior.RunningPolicy.TRY_ALL,
                                         ImmutableList.of(
-                                                Pair.of(StrollTask.createDynamicRadius(0.5F), 2),
-                                                Pair.of(StrollTask.create(0.15F, false), 2),
-                                                Pair.of(GoTowardsLookTargetTask.create(PlatypusBrain::canGoToLookTarget, PlatypusBrain::getTemptedSpeed, 3), 3),
-                                                Pair.of(TaskTriggerer.predicate(Entity::isInsideWaterOrBubbleColumn), 5),
-                                                Pair.of(TaskTriggerer.predicate(Entity::isOnGround), 5)
+                                                Pair.of(RandomStroll.swim(0.5F), 2),
+                                                Pair.of(RandomStroll.stroll(0.15F, false), 2),
+                                                Pair.of(SetWalkTargetFromLookTarget.create(PlatypusBrain::canGoToLookTarget, PlatypusBrain::getTemptedSpeed, 3), 3),
+                                                Pair.of(BehaviorBuilder.triggerIf(Entity::isInWaterOrBubble), 5),
+                                                Pair.of(BehaviorBuilder.triggerIf(Entity::onGround), 5)
                                         )
                                 )
                         )
@@ -77,26 +88,26 @@ public class PlatypusBrain {
     }
 
     private static boolean canGoToLookTarget(LivingEntity entity) {
-        World world = entity.getWorld();
-        Optional<LookTarget> optional = entity.getBrain().getOptionalRegisteredMemory(MemoryModuleType.LOOK_TARGET);
+        Level world = entity.level();
+        Optional<PositionTracker> optional = entity.getBrain().getMemory(MemoryModuleType.LOOK_TARGET);
         if (optional.isPresent()) {
-            BlockPos blockPos = optional.get().getBlockPos();
-            return world.isWater(blockPos) == entity.isInsideWaterOrBubbleColumn();
+            BlockPos blockPos = optional.get().currentBlockPosition();
+            return world.isWaterAt(blockPos) == entity.isInWaterOrBubble();
         } else {
             return false;
         }
     }
 
     public static void updateActivities(PlatypusEntity platypus) {
-        Brain<AxolotlEntity> brain = platypus.getBrain();
-        brain.resetPossibleActivities(ImmutableList.of(Activity.IDLE));
+        Brain<Axolotl> brain = platypus.getBrain();
+        brain.setActiveActivityToFirstValid(ImmutableList.of(Activity.IDLE));
     }
 
     private static float getAdultFollowingSpeed(LivingEntity entity) {
-        return entity.isInsideWaterOrBubbleColumn() ? 0.6F : 0.15F;
+        return entity.isInWaterOrBubble() ? 0.6F : 0.15F;
     }
 
     private static float getTemptedSpeed(LivingEntity entity) {
-        return entity.isInsideWaterOrBubbleColumn() ? 0.5F : 0.15F;
+        return entity.isInWaterOrBubble() ? 0.5F : 0.15F;
     }
 }

@@ -7,15 +7,18 @@ package net.libraum.platypodes.entity.client;
 import com.google.common.collect.ImmutableList;
 import net.libraum.platypodes.entity.custom.PlatypusEntity;
 import net.minecraft.client.model.*;
-import net.minecraft.client.render.entity.model.AnimalModel;
-import net.minecraft.client.render.entity.model.EntityModelPartNames;
-import net.minecraft.entity.AngledModelEntity;
-import net.minecraft.util.math.MathHelper;
+import net.minecraft.client.model.AgeableListModel;
+import net.minecraft.client.model.geom.ModelPart;
+import net.minecraft.client.model.geom.PartNames;
+import net.minecraft.client.model.geom.PartPose;
+import net.minecraft.client.model.geom.builders.*;
+import net.minecraft.world.entity.LerpingModel;
+import net.minecraft.util.Mth;
 import org.joml.Vector3f;
 
 import java.util.Map;
 
-public class PlatypusEntityModel<T extends PlatypusEntity & AngledModelEntity> extends AnimalModel<T> {
+public class PlatypusEntityModel<T extends PlatypusEntity & LerpingModel> extends AgeableListModel<T> {
 	public static final float MOVING_IN_WATER_LEG_PITCH = 1.8849558F;
 	private final ModelPart head;
 	private final ModelPart topGills;
@@ -30,80 +33,80 @@ public class PlatypusEntityModel<T extends PlatypusEntity & AngledModelEntity> e
 
 	public PlatypusEntityModel(ModelPart root) {
 		super(true, 8.0f, 3.35f);
-		this.body = root.getChild(EntityModelPartNames.BODY);
-		this.head = this.body.getChild(EntityModelPartNames.HEAD);
-		this.rightHindLeg = this.body.getChild(EntityModelPartNames.RIGHT_HIND_LEG);
-		this.leftHindLeg = this.body.getChild(EntityModelPartNames.LEFT_HIND_LEG);
-		this.rightFrontLeg = this.body.getChild(EntityModelPartNames.RIGHT_FRONT_LEG);
-		this.leftFrontLeg = this.body.getChild(EntityModelPartNames.LEFT_FRONT_LEG);
-		this.tail = this.body.getChild(EntityModelPartNames.TAIL);
-		this.topGills = this.head.getChild(EntityModelPartNames.TOP_GILLS);
-		this.leftGills = this.head.getChild(EntityModelPartNames.LEFT_GILLS);
-		this.rightGills = this.head.getChild(EntityModelPartNames.RIGHT_GILLS);
+		this.body = root.getChild(PartNames.BODY);
+		this.head = this.body.getChild(PartNames.HEAD);
+		this.rightHindLeg = this.body.getChild(PartNames.RIGHT_HIND_LEG);
+		this.leftHindLeg = this.body.getChild(PartNames.LEFT_HIND_LEG);
+		this.rightFrontLeg = this.body.getChild(PartNames.RIGHT_FRONT_LEG);
+		this.leftFrontLeg = this.body.getChild(PartNames.LEFT_FRONT_LEG);
+		this.tail = this.body.getChild(PartNames.TAIL);
+		this.topGills = this.head.getChild(PartNames.TOP_GILLS);
+		this.leftGills = this.head.getChild(PartNames.LEFT_GILLS);
+		this.rightGills = this.head.getChild(PartNames.RIGHT_GILLS);
 	}
-	public static TexturedModelData getTexturedModelData() {
-		ModelData modelData = new ModelData();
-		ModelPartData modelPartData = modelData.getRoot();
-		ModelPartData modelPartData2 = modelPartData.addChild(
-				EntityModelPartNames.BODY,
-				ModelPartBuilder.create()
-						.uv(0, 10).cuboid(-4.0F, -4.0F, -9.0F, 8.0F, 6.0F, 10.0F),
-				ModelTransform.pivot(0.0F, 18.0F, 4.0F)
+	public static LayerDefinition getTexturedModelData() {
+		MeshDefinition modelData = new MeshDefinition();
+		PartDefinition modelPartData = modelData.getRoot();
+		PartDefinition modelPartData2 = modelPartData.addOrReplaceChild(
+				PartNames.BODY,
+				CubeListBuilder.create()
+						.texOffs(0, 10).addBox(-4.0F, -4.0F, -9.0F, 8.0F, 6.0F, 10.0F),
+				PartPose.offset(0.0F, 18.0F, 4.0F)
 		);
-		Dilation dilation = new Dilation(0F);
-		ModelPartData modelPartData3 = modelPartData2.addChild(
-				EntityModelPartNames.HEAD,
-				ModelPartBuilder.create()
-						.uv(0, 0).cuboid(-4.0F, -3.0F, -5.0F, 8.0F, 5.0F, 5.0F, dilation)
-						.uv(26, 1).cuboid(-3.5F, -0.3F, -9.0F, 7.0F, 2.0F, 4.0F, dilation),
-				ModelTransform.pivot(0.0F, 0.0F, -9.0F)
+		CubeDeformation dilation = new CubeDeformation(0F);
+		PartDefinition modelPartData3 = modelPartData2.addOrReplaceChild(
+				PartNames.HEAD,
+				CubeListBuilder.create()
+						.texOffs(0, 0).addBox(-4.0F, -3.0F, -5.0F, 8.0F, 5.0F, 5.0F, dilation)
+						.texOffs(26, 1).addBox(-3.5F, -0.3F, -9.0F, 7.0F, 2.0F, 4.0F, dilation),
+				PartPose.offset(0.0F, 0.0F, -9.0F)
 		);
-		ModelPartBuilder modelPartBuilder = ModelPartBuilder.create()
-				.uv(0, 0).cuboid(0F, 0F, 0F, 0F, 0F, 0F, dilation);
-		ModelPartBuilder modelPartBuilder2 = ModelPartBuilder.create()
-				.uv(0, 0).cuboid(0F, 0F, 0F, 0F, 0F, 0F, dilation);
-		ModelPartBuilder modelPartBuilder3 = ModelPartBuilder.create()
-				.uv(0, 0).cuboid(0F, 0F, 0F, 0F, 0F, 0F, dilation);
-		modelPartData3.addChild(EntityModelPartNames.TOP_GILLS, modelPartBuilder, ModelTransform.pivot(0.0F, 15.0F, -6.0F));
-		modelPartData3.addChild(EntityModelPartNames.LEFT_GILLS, modelPartBuilder2, ModelTransform.pivot(-4.0F, 18.0F, -6.0F));
-		modelPartData3.addChild(EntityModelPartNames.RIGHT_GILLS, modelPartBuilder3, ModelTransform.pivot(4.0F, 18.0F, -6.0F));
+		CubeListBuilder modelPartBuilder = CubeListBuilder.create()
+				.texOffs(0, 0).addBox(0F, 0F, 0F, 0F, 0F, 0F, dilation);
+		CubeListBuilder modelPartBuilder2 = CubeListBuilder.create()
+				.texOffs(0, 0).addBox(0F, 0F, 0F, 0F, 0F, 0F, dilation);
+		CubeListBuilder modelPartBuilder3 = CubeListBuilder.create()
+				.texOffs(0, 0).addBox(0F, 0F, 0F, 0F, 0F, 0F, dilation);
+		modelPartData3.addOrReplaceChild(PartNames.TOP_GILLS, modelPartBuilder, PartPose.offset(0.0F, 15.0F, -6.0F));
+		modelPartData3.addOrReplaceChild(PartNames.LEFT_GILLS, modelPartBuilder2, PartPose.offset(-4.0F, 18.0F, -6.0F));
+		modelPartData3.addOrReplaceChild(PartNames.RIGHT_GILLS, modelPartBuilder3, PartPose.offset(4.0F, 18.0F, -6.0F));
 
-		ModelPartBuilder modelPartBuilder4 = ModelPartBuilder.create()
-				.uv(1, 10).cuboid(-0.5F, 0.5F, -1.0F, 2.0F, 2.0F, 2.0F, dilation)
-				.uv(0,14).mirrored().cuboid(-1.5F, 2.0F, 0F, 4.0F, 3.0F, 0.0F);
-		ModelPartBuilder modelPartBuilder5 = ModelPartBuilder.create()
-				.uv(1, 10).mirrored().cuboid(-1.5F, 0.5F, -1.0F, 2.0F, 2.0F, 2.0F, dilation).mirrored(false)
-				.uv(0, 14).cuboid(-2.5F, 2.0F, 0F, 4.0F, 3.0F, 0.0F, dilation);
-		modelPartData2.addChild(EntityModelPartNames.LEFT_FRONT_LEG, modelPartBuilder4, ModelTransform.pivot(3.5F, 1.0F, -8.0F));
-		modelPartData2.addChild(EntityModelPartNames.LEFT_HIND_LEG, modelPartBuilder4, ModelTransform.pivot(3.5F, 1.0F, -1.0F));
-		modelPartData2.addChild(EntityModelPartNames.RIGHT_FRONT_LEG, modelPartBuilder5, ModelTransform.pivot(-3.5F, 1.0F, -8.0F));
-		modelPartData2.addChild(EntityModelPartNames.RIGHT_HIND_LEG, modelPartBuilder5, ModelTransform.pivot(-3.5F, 1.0F, -1.0F));
+		CubeListBuilder modelPartBuilder4 = CubeListBuilder.create()
+				.texOffs(1, 10).addBox(-0.5F, 0.5F, -1.0F, 2.0F, 2.0F, 2.0F, dilation)
+				.texOffs(0,14).mirror().addBox(-1.5F, 2.0F, 0F, 4.0F, 3.0F, 0.0F);
+		CubeListBuilder modelPartBuilder5 = CubeListBuilder.create()
+				.texOffs(1, 10).mirror().addBox(-1.5F, 0.5F, -1.0F, 2.0F, 2.0F, 2.0F, dilation).mirror(false)
+				.texOffs(0, 14).addBox(-2.5F, 2.0F, 0F, 4.0F, 3.0F, 0.0F, dilation);
+		modelPartData2.addOrReplaceChild(PartNames.LEFT_FRONT_LEG, modelPartBuilder4, PartPose.offset(3.5F, 1.0F, -8.0F));
+		modelPartData2.addOrReplaceChild(PartNames.LEFT_HIND_LEG, modelPartBuilder4, PartPose.offset(3.5F, 1.0F, -1.0F));
+		modelPartData2.addOrReplaceChild(PartNames.RIGHT_FRONT_LEG, modelPartBuilder5, PartPose.offset(-3.5F, 1.0F, -8.0F));
+		modelPartData2.addOrReplaceChild(PartNames.RIGHT_HIND_LEG, modelPartBuilder5, PartPose.offset(-3.5F, 1.0F, -1.0F));
 
-		modelPartData2.addChild(
-				EntityModelPartNames.TAIL, ModelPartBuilder.create().uv(26, 9).cuboid(-3.5F, -2.0F, 0.0F, 7.0F, 3.0F, 8.0F),
-				ModelTransform.pivot(0.0F, 0.0F, 1.0F)
+		modelPartData2.addOrReplaceChild(
+				PartNames.TAIL, CubeListBuilder.create().texOffs(26, 9).addBox(-3.5F, -2.0F, 0.0F, 7.0F, 3.0F, 8.0F),
+				PartPose.offset(0.0F, 0.0F, 1.0F)
 		);
-		return TexturedModelData.of(modelData, 64, 64);
+		return LayerDefinition.create(modelData, 64, 64);
 	}
 
 	@Override
-	protected Iterable<ModelPart> getHeadParts() {
+	protected Iterable<ModelPart> headParts() {
 		return ImmutableList.of();
 	}
 
 	@Override
-	protected Iterable<ModelPart> getBodyParts() {
+	protected Iterable<ModelPart> bodyParts() {
 		return ImmutableList.of(this.body);
 	}
 
-	public void setAngles(T axolotlEntity, float f, float g, float h, float i, float j) {
+	public void setupAnim(T axolotlEntity, float f, float g, float h, float i, float j) {
 		this.resetAngles(axolotlEntity, i, j);
 		if (axolotlEntity.isPlayingDead()) {
 			this.setPlayingDeadAngles(i);
 			this.updateAnglesCache(axolotlEntity);
 		} else {
-			boolean bl = g > 1.0E-5F || axolotlEntity.getPitch() != axolotlEntity.prevPitch || axolotlEntity.getYaw() != axolotlEntity.prevYaw;
-			if (axolotlEntity.isInsideWaterOrBubbleColumn()) {
+			boolean bl = g > 1.0E-5F || axolotlEntity.getXRot() != axolotlEntity.xRotO || axolotlEntity.getYRot() != axolotlEntity.yRotO;
+			if (axolotlEntity.isInWaterOrBubble()) {
 				if (bl) {
 					this.setMovingInWaterAngles(h, j);
 				} else {
@@ -112,7 +115,7 @@ public class PlatypusEntityModel<T extends PlatypusEntity & AngledModelEntity> e
 
 				this.updateAnglesCache(axolotlEntity);
 			} else {
-				if (axolotlEntity.isOnGround()) {
+				if (axolotlEntity.onGround()) {
 					if (bl) {
 						this.setMovingOnGroundAngles(h, i);
 					} else {
@@ -126,7 +129,7 @@ public class PlatypusEntityModel<T extends PlatypusEntity & AngledModelEntity> e
 	}
 
 	private void updateAnglesCache(T axolotl) {
-		Map<String, Vector3f> map = axolotl.getModelAngles();
+		Map<String, Vector3f> map = axolotl.getModelRotationValues();
 		map.put("body", this.getAngles(this.body));
 		map.put("head", this.getAngles(this.head));
 		map.put("right_hind_leg", this.getAngles(this.rightHindLeg));
@@ -140,32 +143,32 @@ public class PlatypusEntityModel<T extends PlatypusEntity & AngledModelEntity> e
 	}
 
 	private Vector3f getAngles(ModelPart part) {
-		return new Vector3f(part.pitch, part.yaw, part.roll);
+		return new Vector3f(part.xRot, part.yRot, part.zRot);
 	}
 
 	private void setAngles(ModelPart part, Vector3f angles) {
-		part.setAngles(angles.x(), angles.y(), angles.z());
+		part.setRotation(angles.x(), angles.y(), angles.z());
 	}
 
 	/**
 	 * Resets the angles of the axolotl model.
 	 */
 	private void resetAngles(T axolotl, float headYaw, float headPitch) {
-		this.body.pivotX = 0.0F;
-		this.head.pivotY = 0.0F;
-		this.body.pivotY = 20.0F;
-		Map<String, Vector3f> map = axolotl.getModelAngles();
+		this.body.x = 0.0F;
+		this.head.y = 0.0F;
+		this.body.y = 20.0F;
+		Map<String, Vector3f> map = axolotl.getModelRotationValues();
 		if (map.isEmpty()) {
-			this.body.setAngles(headPitch * (float) (Math.PI / 180.0), headYaw * (float) (Math.PI / 180.0), 0.0F);
-			this.head.setAngles(0.0F, 0.0F, 0.0F);
-			this.leftHindLeg.setAngles(0.0F, 0.0F, 0.0F);
-			this.rightHindLeg.setAngles(0.0F, 0.0F, 0.0F);
-			this.leftFrontLeg.setAngles(0.0F, 0.0F, 0.0F);
-			this.rightFrontLeg.setAngles(0.0F, 0.0F, 0.0F);
-			this.leftGills.setAngles(0.0F, 0.0F, 0.0F);
-			this.rightGills.setAngles(0.0F, 0.0F, 0.0F);
-			this.topGills.setAngles(0.0F, 0.0F, 0.0F);
-			this.tail.setAngles(0.0F, 0.0F, 0.0F);
+			this.body.setRotation(headPitch * (float) (Math.PI / 180.0), headYaw * (float) (Math.PI / 180.0), 0.0F);
+			this.head.setRotation(0.0F, 0.0F, 0.0F);
+			this.leftHindLeg.setRotation(0.0F, 0.0F, 0.0F);
+			this.rightHindLeg.setRotation(0.0F, 0.0F, 0.0F);
+			this.leftFrontLeg.setRotation(0.0F, 0.0F, 0.0F);
+			this.rightFrontLeg.setRotation(0.0F, 0.0F, 0.0F);
+			this.leftGills.setRotation(0.0F, 0.0F, 0.0F);
+			this.rightGills.setRotation(0.0F, 0.0F, 0.0F);
+			this.topGills.setRotation(0.0F, 0.0F, 0.0F);
+			this.tail.setRotation(0.0F, 0.0F, 0.0F);
 		} else {
 			this.setAngles(this.body, (Vector3f)map.get("body"));
 			this.setAngles(this.head, (Vector3f)map.get("head"));
@@ -185,104 +188,104 @@ public class PlatypusEntityModel<T extends PlatypusEntity & AngledModelEntity> e
 	}
 
 	private float lerpAngleDegrees(float delta, float start, float end) {
-		return MathHelper.lerpAngleDegrees(delta, start, end);
+		return Mth.rotLerp(delta, start, end);
 	}
 
 	private void setAngles(ModelPart part, float pitch, float yaw, float roll) {
-		part.setAngles(this.lerpAngleDegrees(part.pitch, pitch), this.lerpAngleDegrees(part.yaw, yaw), this.lerpAngleDegrees(part.roll, roll));
+		part.setRotation(this.lerpAngleDegrees(part.xRot, pitch), this.lerpAngleDegrees(part.yRot, yaw), this.lerpAngleDegrees(part.zRot, roll));
 	}
 
 	private void setStandingOnGroundAngles(float animationProgress, float headYaw) {
 		float f = animationProgress * 0.09F;
-		float g = MathHelper.sin(f);
-		float h = MathHelper.cos(f);
+		float g = Mth.sin(f);
+		float h = Mth.cos(f);
 		float i = g * g - 2.0F * g;
 		float j = h * h - 3.0F * g;
-		this.head.pitch = this.lerpAngleDegrees(this.head.pitch, -0.09F * i);
-		this.head.yaw = this.lerpAngleDegrees(this.head.yaw, 0.0F);
-		this.head.roll = this.lerpAngleDegrees(this.head.roll, -0.2F);
-		this.tail.yaw = this.lerpAngleDegrees(this.tail.yaw, -0.1F + 0.1F * i);
-		this.topGills.pitch = this.lerpAngleDegrees(this.topGills.pitch, 0.6F + 0.05F * j);
-		this.leftGills.yaw = this.lerpAngleDegrees(this.leftGills.yaw, -this.topGills.pitch);
-		this.rightGills.yaw = this.lerpAngleDegrees(this.rightGills.yaw, -this.leftGills.yaw);
+		this.head.xRot = this.lerpAngleDegrees(this.head.xRot, -0.09F * i);
+		this.head.yRot = this.lerpAngleDegrees(this.head.yRot, 0.0F);
+		this.head.zRot = this.lerpAngleDegrees(this.head.zRot, -0.2F);
+		this.tail.yRot = this.lerpAngleDegrees(this.tail.yRot, -0.1F + 0.1F * i);
+		this.topGills.xRot = this.lerpAngleDegrees(this.topGills.xRot, 0.6F + 0.05F * j);
+		this.leftGills.yRot = this.lerpAngleDegrees(this.leftGills.yRot, -this.topGills.xRot);
+		this.rightGills.yRot = this.lerpAngleDegrees(this.rightGills.yRot, -this.leftGills.yRot);
 		this.setAngles(this.leftHindLeg, 1.1F, 1.0F, 0.0F);
 		this.setAngles(this.leftFrontLeg, 0.8F, 2.3F, -0.5F);
 		this.copyLegAngles();
-		this.body.pitch = this.lerpAngleDegrees(0.2F, this.body.pitch, 0.0F);
-		this.body.yaw = this.lerpAngleDegrees(this.body.yaw, headYaw * (float) (Math.PI / 180.0));
-		this.body.roll = this.lerpAngleDegrees(this.body.roll, 0.0F);
+		this.body.xRot = this.lerpAngleDegrees(0.2F, this.body.xRot, 0.0F);
+		this.body.yRot = this.lerpAngleDegrees(this.body.yRot, headYaw * (float) (Math.PI / 180.0));
+		this.body.zRot = this.lerpAngleDegrees(this.body.zRot, 0.0F);
 	}
 
 	private void setMovingOnGroundAngles(float animationProgress, float headYaw) {
 		float f = animationProgress * 0.11F;
-		float g = MathHelper.cos(f);
+		float g = Mth.cos(f);
 		float h = (g * g - 2.0F * g) / 5.0F;
 		float i = 0.7F * g;
-		this.head.pitch = this.lerpAngleDegrees(this.head.pitch, 0.0F);
-		this.head.yaw = this.lerpAngleDegrees(this.head.yaw, 0.09F * g);
-		this.head.roll = this.lerpAngleDegrees(this.head.roll, 0.0F);
-		this.tail.yaw = this.lerpAngleDegrees(this.tail.yaw, this.head.yaw);
-		this.topGills.pitch = this.lerpAngleDegrees(this.topGills.pitch, 0.6F - 0.08F * (g * g + 2.0F * MathHelper.sin(f)));
-		this.leftGills.yaw = this.lerpAngleDegrees(this.leftGills.yaw, -this.topGills.pitch);
-		this.rightGills.yaw = this.lerpAngleDegrees(this.rightGills.yaw, -this.leftGills.yaw);
+		this.head.xRot = this.lerpAngleDegrees(this.head.xRot, 0.0F);
+		this.head.yRot = this.lerpAngleDegrees(this.head.yRot, 0.09F * g);
+		this.head.zRot = this.lerpAngleDegrees(this.head.zRot, 0.0F);
+		this.tail.yRot = this.lerpAngleDegrees(this.tail.yRot, this.head.yRot);
+		this.topGills.xRot = this.lerpAngleDegrees(this.topGills.xRot, 0.6F - 0.08F * (g * g + 2.0F * Mth.sin(f)));
+		this.leftGills.yRot = this.lerpAngleDegrees(this.leftGills.yRot, -this.topGills.xRot);
+		this.rightGills.yRot = this.lerpAngleDegrees(this.rightGills.yRot, -this.leftGills.yRot);
 		this.setAngles(this.leftHindLeg, 0.9424779F, 1.5F - h, -0.1F);
 		this.setAngles(this.leftFrontLeg, 1.0995574F, (float) (Math.PI / 2) - i, 0.0F);
-		this.setAngles(this.rightHindLeg, this.leftHindLeg.pitch, -1.0F - h, 0.0F);
-		this.setAngles(this.rightFrontLeg, this.leftFrontLeg.pitch, (float) (-Math.PI / 2) - i, 0.0F);
-		this.body.pitch = this.lerpAngleDegrees(0.2F, this.body.pitch, 0.0F);
-		this.body.yaw = this.lerpAngleDegrees(this.body.yaw, headYaw * (float) (Math.PI / 180.0));
-		this.body.roll = this.lerpAngleDegrees(this.body.roll, 0.0F);
+		this.setAngles(this.rightHindLeg, this.leftHindLeg.xRot, -1.0F - h, 0.0F);
+		this.setAngles(this.rightFrontLeg, this.leftFrontLeg.xRot, (float) (-Math.PI / 2) - i, 0.0F);
+		this.body.xRot = this.lerpAngleDegrees(0.2F, this.body.xRot, 0.0F);
+		this.body.yRot = this.lerpAngleDegrees(this.body.yRot, headYaw * (float) (Math.PI / 180.0));
+		this.body.zRot = this.lerpAngleDegrees(this.body.zRot, 0.0F);
 	}
 
 	private void setStandingInWaterAngles(float animationProgress) {
 		float f = animationProgress * 0.075F;
-		float g = MathHelper.cos(f);
-		float h = MathHelper.sin(f) * 0.15F;
-		this.body.pitch = this.lerpAngleDegrees(this.body.pitch, -0.15F + 0.075F * g);
-		this.body.pivotY -= h;
-		this.head.pitch = this.lerpAngleDegrees(this.head.pitch, -this.body.pitch);
-		this.topGills.pitch = this.lerpAngleDegrees(this.topGills.pitch, 0.2F * g);
-		this.leftGills.yaw = this.lerpAngleDegrees(this.leftGills.yaw, -0.3F * g - 0.19F);
-		this.rightGills.yaw = this.lerpAngleDegrees(this.rightGills.yaw, -this.leftGills.yaw);
+		float g = Mth.cos(f);
+		float h = Mth.sin(f) * 0.15F;
+		this.body.xRot = this.lerpAngleDegrees(this.body.xRot, -0.15F + 0.075F * g);
+		this.body.y -= h;
+		this.head.xRot = this.lerpAngleDegrees(this.head.xRot, -this.body.xRot);
+		this.topGills.xRot = this.lerpAngleDegrees(this.topGills.xRot, 0.2F * g);
+		this.leftGills.yRot = this.lerpAngleDegrees(this.leftGills.yRot, -0.3F * g - 0.19F);
+		this.rightGills.yRot = this.lerpAngleDegrees(this.rightGills.yRot, -this.leftGills.yRot);
 		this.setAngles(this.leftHindLeg, (float) (Math.PI * 3.0 / 4.0) - g * 0.11F, 0.47123894F, 1.7278761F);
 		this.setAngles(this.leftFrontLeg, (float) (Math.PI / 4) - g * 0.2F, 2.042035F, 0.0F);
 		this.copyLegAngles();
-		this.tail.yaw = this.lerpAngleDegrees(this.tail.yaw, 0.5F * g);
-		this.head.yaw = this.lerpAngleDegrees(this.head.yaw, 0.0F);
-		this.head.roll = this.lerpAngleDegrees(this.head.roll, 0.0F);
+		this.tail.yRot = this.lerpAngleDegrees(this.tail.yRot, 0.5F * g);
+		this.head.yRot = this.lerpAngleDegrees(this.head.yRot, 0.0F);
+		this.head.zRot = this.lerpAngleDegrees(this.head.zRot, 0.0F);
 	}
 
 	private void setMovingInWaterAngles(float animationProgress, float headPitch) {
 		float f = animationProgress * 0.33F;
-		float g = MathHelper.sin(f);
-		float h = MathHelper.cos(f);
+		float g = Mth.sin(f);
+		float h = Mth.cos(f);
 		float i = 0.13F * g;
-		this.body.pitch = this.lerpAngleDegrees(0.1F, this.body.pitch, headPitch * (float) (Math.PI / 180.0) + i);
-		this.head.pitch = -i * 1.8F;
-		this.body.pivotY -= 0.45F * h;
-		this.topGills.pitch = this.lerpAngleDegrees(this.topGills.pitch, -0.5F * g - 0.8F);
-		this.leftGills.yaw = this.lerpAngleDegrees(this.leftGills.yaw, 0.3F * g + 0.9F);
-		this.rightGills.yaw = this.lerpAngleDegrees(this.rightGills.yaw, -this.leftGills.yaw);
-		this.tail.yaw = this.lerpAngleDegrees(this.tail.yaw, 0.3F * MathHelper.cos(f * 0.9F));
+		this.body.xRot = this.lerpAngleDegrees(0.1F, this.body.xRot, headPitch * (float) (Math.PI / 180.0) + i);
+		this.head.xRot = -i * 1.8F;
+		this.body.y -= 0.45F * h;
+		this.topGills.xRot = this.lerpAngleDegrees(this.topGills.xRot, -0.5F * g - 0.8F);
+		this.leftGills.yRot = this.lerpAngleDegrees(this.leftGills.yRot, 0.3F * g + 0.9F);
+		this.rightGills.yRot = this.lerpAngleDegrees(this.rightGills.yRot, -this.leftGills.yRot);
+		this.tail.yRot = this.lerpAngleDegrees(this.tail.yRot, 0.3F * Mth.cos(f * 0.9F));
 		this.setAngles(this.leftHindLeg, 1.8849558F, -0.4F * g, (float) (Math.PI / 2));
 		this.setAngles(this.leftFrontLeg, 1.8849558F * h + (float) (Math.PI), -0.2F * h - 0.1F, (float) (Math.PI / 2) + 0.5F);
 		this.copyLegAngles();
-		this.setAngles(this.rightFrontLeg, 1.8849558F * -h + (float) (Math.PI), -this.leftFrontLeg.yaw, -this.leftFrontLeg.roll);
-		this.head.yaw = this.lerpAngleDegrees(this.head.yaw, 0.0F);
-		this.head.roll = this.lerpAngleDegrees(this.head.roll, 0.0F);
+		this.setAngles(this.rightFrontLeg, 1.8849558F * -h + (float) (Math.PI), -this.leftFrontLeg.yRot, -this.leftFrontLeg.zRot);
+		this.head.yRot = this.lerpAngleDegrees(this.head.yRot, 0.0F);
+		this.head.zRot = this.lerpAngleDegrees(this.head.zRot, 0.0F);
 	}
 
 	private void setPlayingDeadAngles(float headYaw) {
 		this.setAngles(this.leftHindLeg, 1.4137167F, 1.0995574F, (float) (Math.PI / 4));
 		this.setAngles(this.leftFrontLeg, (float) (Math.PI / 4), 2.042035F, 0.0F);
-		this.body.pitch = this.lerpAngleDegrees(this.body.pitch, -0.15F);
-		this.body.roll = this.lerpAngleDegrees(this.body.roll, 0.35F);
+		this.body.xRot = this.lerpAngleDegrees(this.body.xRot, -0.15F);
+		this.body.zRot = this.lerpAngleDegrees(this.body.zRot, 0.35F);
 		this.copyLegAngles();
-		this.body.yaw = this.lerpAngleDegrees(this.body.yaw, headYaw * (float) (Math.PI / 180.0));
-		this.head.pitch = this.lerpAngleDegrees(this.head.pitch, 0.0F);
-		this.head.yaw = this.lerpAngleDegrees(this.head.yaw, 0.0F);
-		this.head.roll = this.lerpAngleDegrees(this.head.roll, 0.0F);
-		this.tail.yaw = this.lerpAngleDegrees(this.tail.yaw, 0.0F);
+		this.body.yRot = this.lerpAngleDegrees(this.body.yRot, headYaw * (float) (Math.PI / 180.0));
+		this.head.xRot = this.lerpAngleDegrees(this.head.xRot, 0.0F);
+		this.head.yRot = this.lerpAngleDegrees(this.head.yRot, 0.0F);
+		this.head.zRot = this.lerpAngleDegrees(this.head.zRot, 0.0F);
+		this.tail.yRot = this.lerpAngleDegrees(this.tail.yRot, 0.0F);
 		this.setAngles(this.topGills, 0.0F, 0.0F, 0.0F);
 		this.setAngles(this.leftGills, 0.0F, 0.0F, 0.0F);
 		this.setAngles(this.rightGills, 0.0F, 0.0F, 0.0F);
@@ -292,7 +295,7 @@ public class PlatypusEntityModel<T extends PlatypusEntity & AngledModelEntity> e
 	 * Copies and mirrors the left leg angles to the right leg angles.
 	 */
 	private void copyLegAngles() {
-		this.setAngles(this.rightHindLeg, this.leftHindLeg.pitch, -this.leftHindLeg.yaw, -this.leftHindLeg.roll);
-		this.setAngles(this.rightFrontLeg, this.leftFrontLeg.pitch, -this.leftFrontLeg.yaw, -this.leftFrontLeg.roll);
+		this.setAngles(this.rightHindLeg, this.leftHindLeg.xRot, -this.leftHindLeg.yRot, -this.leftHindLeg.zRot);
+		this.setAngles(this.rightFrontLeg, this.leftFrontLeg.xRot, -this.leftFrontLeg.yRot, -this.leftFrontLeg.zRot);
 	}
 }
