@@ -8,6 +8,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ai.brain.sensor.Sensor;
 import net.minecraft.entity.ai.brain.sensor.SensorType;
 import net.minecraft.entity.ai.goal.AnimalMateGoal;
+import net.minecraft.entity.ai.goal.BreatheAirGoal;
 import net.minecraft.entity.ai.goal.TemptGoal;
 import net.minecraft.entity.attribute.DefaultAttributeContainer;
 import net.minecraft.entity.attribute.EntityAttributes;
@@ -33,6 +34,7 @@ public class PlatypusEntity extends AxolotlEntity {
 
     @Override
     protected void initGoals() {
+        this.goalSelector.add(0, new BreatheAirGoal(this));
         this.goalSelector.add(1, new AnimalMateGoal(this, 0.2));
         this.goalSelector.add(2, new TemptGoal(this,0.3, Ingredient.ofItems(ModItems.YABBY),false));
     }

@@ -265,8 +265,9 @@ public class PlatypusEntityModel<T extends PlatypusEntity & AngledModelEntity> e
 		this.rightGills.yaw = this.lerpAngleDegrees(this.rightGills.yaw, -this.leftGills.yaw);
 		this.tail.yaw = this.lerpAngleDegrees(this.tail.yaw, 0.3F * MathHelper.cos(f * 0.9F));
 		this.setAngles(this.leftHindLeg, 1.8849558F, -0.4F * g, (float) (Math.PI / 2));
-		this.setAngles(this.leftFrontLeg, 1.8849558F, -0.2F * h - 0.1F, (float) (Math.PI / 2));
+		this.setAngles(this.leftFrontLeg, 1.8849558F * h + (float) (Math.PI), -0.2F * h - 0.1F, (float) (Math.PI / 2) + 0.5F);
 		this.copyLegAngles();
+		this.setAngles(this.rightFrontLeg, 1.8849558F * -h + (float) (Math.PI), -this.leftFrontLeg.yaw, -this.leftFrontLeg.roll);
 		this.head.yaw = this.lerpAngleDegrees(this.head.yaw, 0.0F);
 		this.head.roll = this.lerpAngleDegrees(this.head.roll, 0.0F);
 	}
