@@ -5,18 +5,15 @@ import net.libraum.platypodes.entity.ModEntities;
 import net.libraum.platypodes.items.ModItems;
 import net.libraum.platypodes.sound.ModSounds;
 import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.sensing.SensorType;
-import net.minecraft.world.entity.ai.goal.BreedGoal;
-import net.minecraft.world.entity.ai.goal.BreathAirGoal;
-import net.minecraft.world.entity.ai.goal.TemptGoal;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.world.entity.AgeableMob;
-import net.minecraft.world.entity.animal.axolotl.Axolotl.Variant;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.server.level.ServerLevel;
@@ -35,7 +32,7 @@ public class PlatypusEntity extends Axolotl {
 
     @Override
     protected void registerGoals() {
-        this.goalSelector.addGoal(0, new BreathAirGoal(this));
+        this.goalSelector.addGoal(0, new PlatypusBreatheAirGoal(this, 0.5));
         this.goalSelector.addGoal(1, new BreedGoal(this, 0.2));
         this.goalSelector.addGoal(2, new TemptGoal(this,0.3, Ingredient.of(ModItems.YABBY),false));
     }
@@ -85,18 +82,28 @@ public class PlatypusEntity extends Axolotl {
         return new ItemStack(ModItems.PLATYPUS_BUCKET);
     }
 
-    /** Prevent suffocating on land */
+    /** Breathe on land + drowning */
     @Override
     protected void handleAirSupply(int air) {
-        if (this.isAlive() && !this.isInWaterRainOrBubble()) {
+        if (this.isAlive() && this.isInWaterRainOrBubble()) {
             this.setAirSupply(air - 1);
             if (this.getAirSupply() == -20) {
                 this.setAirSupply(0);
-                //this.damage(this.getDamageSources().dryOut(), 2.0F);
+                this.hurt(this.damageSources().drown(), 2.0F);
             }
         } else {
             this.setAirSupply(this.getMaxAirSupply());
         }
+    }
+
+    @Override
+    public int getMaxAirSupply() {
+        return 300;
+    }
+
+    @Override
+    public boolean canBreatheUnderwater() {
+        return false;
     }
 
     /** Sound Events */

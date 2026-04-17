@@ -8,8 +8,6 @@ import net.libraum.platypodes.entity.ModEntities;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
-//import net.minecraft.entity.ai.brain.*;
-//import net.minecraft.entity.ai.brain.task.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.behavior.*;
 import net.minecraft.world.entity.ai.behavior.BabyFollowAdult;
