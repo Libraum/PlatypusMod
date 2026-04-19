@@ -1,12 +1,15 @@
 package net.libraum.platypodes.entity.custom;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Dynamic;
 import net.libraum.platypodes.entity.ModEntities;
+import net.libraum.platypodes.entity.ai.PlatypusBrain;
 import net.libraum.platypodes.items.ModItems;
 import net.libraum.platypodes.sound.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.goal.*;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.sensing.SensorType;
@@ -33,16 +36,9 @@ public class PlatypusEntity extends Axolotl {
     public PlatypusEntity(EntityType<? extends PlatypusEntity> entityType, Level world) {
         super(entityType, world);
     }
-    protected static final ImmutableList<? extends SensorType<? extends Sensor<? super PlatypusEntity>>> SENSORS = ImmutableList.of(
-            SensorType.NEAREST_ADULT, SensorType.HURT_BY
+    protected static final ImmutableList<? extends SensorType<? extends Sensor<? super PlatypusEntity>>> SENSOR_TYPES = ImmutableList.of(
+             SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_ADULT, SensorType.HURT_BY
     );
-
-    @Override
-    protected void registerGoals() {
-        this.goalSelector.addGoal(0, new PlatypusBreatheAirGoal(this, 0.5));
-        this.goalSelector.addGoal(2, new BreedGoal(this, 0.2));
-        this.goalSelector.addGoal(3, new TemptGoal(this,0.3, Ingredient.of(ModItems.YABBY),false));
-    }
 
     public static AttributeSupplier.Builder createPlatypusAttributes() {
         return Mob.createMobAttributes()
@@ -51,15 +47,24 @@ public class PlatypusEntity extends Axolotl {
                 .add(Attributes.ATTACK_DAMAGE, 2.0);
     }
 
+    /** Brain */
+    @Override
+    protected void registerGoals() {
+        this.goalSelector.addGoal(0, new PlatypusBreatheAirGoal(this, 0.5));
+        this.goalSelector.addGoal(2, new BreedGoal(this, 0.2));
+        this.goalSelector.addGoal(3, new TemptGoal(this,0.3, Ingredient.of(ModItems.YABBY),false));
+    }
+
+    @Override
+    protected Brain<?> makeBrain(Dynamic<?> dynamic) {
+        return PlatypusBrain.create(Brain.provider(MEMORY_TYPES, SENSOR_TYPES).makeBrain(dynamic));
+    }
+
+    /** Breeding + Bucket */
     @Override
     public boolean isFood(ItemStack stack) {
         return stack.is(ModItems.YABBY);
     }
-
-//    @Override
-//    protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
-//        return PlatypusBrain.create(Brain.createProfile(MEMORY_MODULES, SENSORS).deserialize(dynamic));
-//    }
 
     private static boolean shouldBabyBeDifferent(RandomSource random) {
         return random.nextInt(1200) == 0;
@@ -104,7 +109,9 @@ public class PlatypusEntity extends Axolotl {
     }
 
     @Override
-    public int getMaxAirSupply() { return 6000; }
+    public int getMaxAirSupply() {
+        return 6000;
+    }
 
     @Override
     public boolean canBreatheUnderwater() {

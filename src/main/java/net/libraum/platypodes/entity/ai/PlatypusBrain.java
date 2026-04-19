@@ -1,10 +1,11 @@
-package net.libraum.platypodes.entity.custom;
+package net.libraum.platypodes.entity.ai;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import net.libraum.platypodes.entity.ModEntities;
+import net.libraum.platypodes.entity.custom.PlatypusEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,11 +27,16 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.schedule.Activity;
 import net.minecraft.world.level.Level;
+import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.Optional;
 
 public class PlatypusBrain {
-    private static final UniformInt WALK_TOWARD_ADULT_RANGE = UniformInt.of(5, 16);
+    private static final UniformInt FOLLOW_RANGE = UniformInt.of(5, 16);
+    private static final float LOVE_SPEED = 0.25F;
+    private static final float LAND_SPEED = 0.2F;
+    private static final float WATER_SPEED = 0.5F;
+    private static final float FOLLOW_WATER_SPEED = 0.6F;
 
     public static Brain<?> create(Brain<PlatypusEntity> brain) {
         addCoreActivities(brain);
@@ -41,7 +47,7 @@ public class PlatypusBrain {
         return brain;
     }
 
-    private static void addCoreActivities(Brain<PlatypusEntity> brain) {
+    private static void addCoreActivities(@UnknownNullability Brain<PlatypusEntity> brain) {
         brain.addActivity(
                 Activity.CORE,
                 0,
@@ -53,22 +59,22 @@ public class PlatypusBrain {
         );
     }
 
-    private static void addIdleActivities(Brain<PlatypusEntity> brain) {
+    private static void addIdleActivities(@UnknownNullability Brain<PlatypusEntity> brain) {
         brain.addActivity(
                 Activity.IDLE,
                 ImmutableList.of(
                         Pair.of(0, SetEntityLookTargetSometimes.create(EntityType.PLAYER, 6.0F, UniformInt.of(30, 60))),
-                        Pair.of(1, new AnimalMakeLove(ModEntities.PLATYPUS, 0.2F)),
+                        Pair.of(1, new AnimalMakeLove(ModEntities.PLATYPUS, LOVE_SPEED)),
                         Pair.of(
                                 2,
                                 new RunOne<>(
                                         ImmutableList.of(
                                                 Pair.of(new FollowTemptation(PlatypusBrain::getTemptedSpeed), 1),
-                                                Pair.of(BabyFollowAdult.create(WALK_TOWARD_ADULT_RANGE, PlatypusBrain::getAdultFollowingSpeed), 1)
+                                                Pair.of(BabyFollowAdult.create(FOLLOW_RANGE, PlatypusBrain::getAdultFollowingSpeed), 1)
                                         )
                                 )
                         ),
-                        Pair.of(3, TryFindWater.create(6, 0.15F)),
+                        Pair.of(3, TryFindWater.create(6, LAND_SPEED)),
                         Pair.of(
                                 4,
                                 new GateBehavior<>(
@@ -77,8 +83,8 @@ public class PlatypusBrain {
                                         GateBehavior.OrderPolicy.ORDERED,
                                         GateBehavior.RunningPolicy.TRY_ALL,
                                         ImmutableList.of(
-                                                Pair.of(RandomStroll.swim(0.5F), 2),
-                                                Pair.of(RandomStroll.stroll(0.15F, false), 2),
+                                                Pair.of(RandomStroll.swim(WATER_SPEED), 2),
+                                                Pair.of(RandomStroll.stroll(LAND_SPEED, false), 2),
                                                 Pair.of(SetWalkTargetFromLookTarget.create(PlatypusBrain::canGoToLookTarget, PlatypusBrain::getTemptedSpeed, 3), 3),
                                                 Pair.of(BehaviorBuilder.triggerIf(Entity::isInWaterOrBubble), 5),
                                                 Pair.of(BehaviorBuilder.triggerIf(Entity::onGround), 5)
@@ -106,10 +112,10 @@ public class PlatypusBrain {
     }
 
     private static float getAdultFollowingSpeed(LivingEntity entity) {
-        return entity.isInWaterOrBubble() ? 0.6F : 0.15F;
+        return entity.isInWaterOrBubble() ? FOLLOW_WATER_SPEED : LAND_SPEED;
     }
 
     private static float getTemptedSpeed(LivingEntity entity) {
-        return entity.isInWaterOrBubble() ? 0.5F : 0.15F;
+        return entity.isInWaterOrBubble() ? WATER_SPEED : LAND_SPEED;
     }
 }
