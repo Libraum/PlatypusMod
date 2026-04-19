@@ -217,7 +217,7 @@ public class PlatypusEntityModel<T extends PlatypusEntity & LerpingModel> extend
 	}
 
 	private void setMovingOnGroundAngles(float animationProgress, float headYaw) {
-		float f = animationProgress * 0.11F;
+		float f = animationProgress * 0.25F;
 		float g = Mth.cos(f);
 		float h = (g * g - 2.0F * g) / 5.0F;
 		float i = 0.7F * g;
