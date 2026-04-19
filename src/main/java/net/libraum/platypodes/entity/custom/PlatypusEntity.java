@@ -1,12 +1,15 @@
 package net.libraum.platypodes.entity.custom;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.serialization.Dynamic;
 import net.libraum.platypodes.entity.ModEntities;
+import net.libraum.platypodes.entity.ai.PlatypusBrain;
 import net.libraum.platypodes.items.ModItems;
 import net.libraum.platypodes.sound.ModSounds;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.goal.BreedGoal;
 import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.TemptGoal;
@@ -35,8 +38,8 @@ public class PlatypusEntity extends Axolotl {
     public PlatypusEntity(EntityType<? extends PlatypusEntity> entityType, Level world) {
         super(entityType, world);
     }
-    protected static final ImmutableList<? extends SensorType<? extends Sensor<? super PlatypusEntity>>> SENSORS = ImmutableList.of(
-            SensorType.NEAREST_ADULT, SensorType.HURT_BY
+    protected static final ImmutableList<? extends SensorType<? extends Sensor<? super PlatypusEntity>>> SENSOR_TYPES = ImmutableList.of(
+            SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_ADULT, SensorType.HURT_BY
     );
 
     public static AttributeSupplier.Builder createPlatypusAttributes() {
@@ -54,10 +57,10 @@ public class PlatypusEntity extends Axolotl {
         this.goalSelector.addGoal(2, new TemptGoal(this,0.3, Ingredient.of(ModItems.YABBY),false));
     }
 
-//    @Override
-//    protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
-//        return PlatypusBrain.create(Brain.createProfile(MEMORY_MODULES, SENSORS).deserialize(dynamic));
-//    }
+    @Override
+    protected Brain<?> makeBrain(Dynamic<?> dynamic) {
+        return PlatypusBrain.create(Brain.provider(MEMORY_TYPES, SENSOR_TYPES).makeBrain(dynamic));
+    }
 
     /** Breeding + Bucket */
     @Override
