@@ -4,25 +4,32 @@ import com.google.common.collect.ImmutableList;
 import net.libraum.platypodes.entity.ModEntities;
 import net.libraum.platypodes.items.ModItems;
 import net.libraum.platypodes.sound.ModSounds;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.ai.goal.BreathAirGoal;
+import net.minecraft.core.BlockPos;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.goal.BreedGoal;
+import net.minecraft.world.entity.ai.goal.Goal;
 import net.minecraft.world.entity.ai.goal.TemptGoal;
 import net.minecraft.world.entity.ai.sensing.Sensor;
 import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.animal.axolotl.Axolotl;
-import net.minecraft.world.entity.AgeableMob;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.EnumSet;
 
 public class PlatypusEntity extends Axolotl {
     public PlatypusEntity(EntityType<? extends PlatypusEntity> entityType, Level world) {
@@ -32,13 +39,6 @@ public class PlatypusEntity extends Axolotl {
             SensorType.NEAREST_ADULT, SensorType.HURT_BY
     );
 
-    @Override
-    protected void registerGoals() {
-        this.goalSelector.addGoal(0, new BreathAirGoal(this));
-        this.goalSelector.addGoal(1, new BreedGoal(this, 0.2));
-        this.goalSelector.addGoal(2, new TemptGoal(this,0.3, Ingredient.of(ModItems.YABBY),false));
-    }
-
     public static AttributeSupplier.Builder createPlatypusAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 14)
@@ -46,15 +46,24 @@ public class PlatypusEntity extends Axolotl {
                 .add(Attributes.ATTACK_DAMAGE, 2.0);
     }
 
+    /** Brain */
     @Override
-    public boolean isFood(ItemStack stack) {
-        return stack.is(ModItems.YABBY);
+    protected void registerGoals() {
+        this.goalSelector.addGoal(0, new PlatypusBreathAirGoal(this, 0.5));
+        this.goalSelector.addGoal(1, new BreedGoal(this, 0.2));
+        this.goalSelector.addGoal(2, new TemptGoal(this,0.3, Ingredient.of(ModItems.YABBY),false));
     }
 
 //    @Override
 //    protected Brain<?> deserializeBrain(Dynamic<?> dynamic) {
 //        return PlatypusBrain.create(Brain.createProfile(MEMORY_MODULES, SENSORS).deserialize(dynamic));
 //    }
+
+    /** Breeding + Bucket */
+    @Override
+    public boolean isFood(ItemStack stack) {
+        return stack.is(ModItems.YABBY);
+    }
 
     private static boolean shouldBabyBeDifferent(RandomSource random) {
         return random.nextInt(1200) == 0;
@@ -85,18 +94,23 @@ public class PlatypusEntity extends Axolotl {
     }
 
 
-    /** Prevent suffocating on land */
+    /** Breathe on land + drowning */
     @Override
     protected void handleAirSupply(int air) {
-        if (this.isAlive() && !this.isInWaterRainOrBubble()) {
+        if (this.isAlive() && this.isInWaterRainOrBubble()) {
             this.setAirSupply(air - 1);
             if (this.getAirSupply() == -20) {
                 this.setAirSupply(0);
-                //this.damage(this.getDamageSources().dryOut(), 2.0F);
+                this.hurt(this.damageSources().drown(), 2.0F);
             }
         } else {
             this.setAirSupply(this.getMaxAirSupply());
         }
+    }
+
+    @Override
+    public int getMaxAirSupply() {
+        return 6000;
     }
 
     /** Sound Events */
@@ -134,5 +148,72 @@ public class PlatypusEntity extends Axolotl {
     @Override
     public SoundEvent getPickupSound() {
         return ModSounds.ITEM_BUCKET_FILL_PLATYPUS;
+    }
+
+    /** Custom Goals */
+    static class PlatypusBreathAirGoal extends Goal {
+        private final PathfinderMob mob;
+        private final double speed;
+
+        public PlatypusBreathAirGoal(PathfinderMob pathfinderMob, Double d) {
+            this.mob = pathfinderMob;
+            this.speed = d;
+            this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+        }
+
+        public boolean canUse() {
+            return this.mob.getAirSupply() < 140;
+        }
+
+        public boolean canContinueToUse() {
+            return this.canUse();
+        }
+
+        public boolean isInterruptable() {
+            return false;
+        }
+
+        public void start() {
+            this.findAirPosition();
+        }
+
+        private void findAirPosition() {
+            Iterable<BlockPos> iterable = BlockPos.betweenClosed(
+                    Mth.floor(this.mob.getX() - (double)1.0F),
+                    this.mob.getBlockY(),
+                    Mth.floor(this.mob.getZ() - (double)1.0F),
+                    Mth.floor(this.mob.getX() + (double)1.0F),
+                    Mth.floor(this.mob.getY() + (double)8.0F),
+                    Mth.floor(this.mob.getZ() + (double)1.0F));
+            BlockPos blockPos = null;
+
+            for(BlockPos blockPos2 : iterable) {
+                if (this.givesAir(this.mob.level(), blockPos2)) {
+                    blockPos = blockPos2;
+                    break;
+                }
+            }
+
+            if (blockPos == null) {
+                blockPos = BlockPos.containing(this.mob.getX(), this.mob.getY() + (double)8.0F, this.mob.getZ());
+            }
+
+            this.mob.getNavigation().moveTo(
+                    (double)blockPos.getX(),
+                    (double)(blockPos.getY() + 1),
+                    (double)blockPos.getZ(),
+                    (double)speed);
+        }
+
+        public void tick() {
+            this.findAirPosition();
+            this.mob.moveRelative(0.02F, new Vec3((double)this.mob.xxa, (double)this.mob.yya, (double)this.mob.zza));
+            this.mob.move(MoverType.SELF, this.mob.getDeltaMovement());
+        }
+
+        private boolean givesAir(LevelReader levelReader, BlockPos blockPos) {
+            BlockState blockState = levelReader.getBlockState(blockPos);
+            return (levelReader.getFluidState(blockPos).isEmpty() || blockState.is(Blocks.BUBBLE_COLUMN)) && blockState.isPathfindable(PathComputationType.LAND);
+        }
     }
 }

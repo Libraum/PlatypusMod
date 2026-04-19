@@ -1,6 +1,6 @@
 package net.libraum.platypodes.mixin;
 
-import net.libraum.platypodes.entity.custom.PlatypusBrain;
+import net.libraum.platypodes.entity.ai.PlatypusBrain;
 import net.libraum.platypodes.entity.custom.PlatypusEntity;
 import net.minecraft.world.entity.animal.axolotl.AxolotlAi;
 import net.minecraft.world.entity.animal.axolotl.Axolotl;
