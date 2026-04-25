@@ -16,6 +16,8 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
+
+	flatDir name: "mods", dir: "mods"
 }
 
 fabricApi {
@@ -30,7 +32,12 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	
+
+	fileTree("mods").visit {FileVisitDetails details ->
+		def name = details.file.name
+		name = name.substring(0, name.lastIndexOf('.') )
+		modImplementation("mods:" + name + ":")
+	}
 }
 
 processResources {

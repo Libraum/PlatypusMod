@@ -3,7 +3,8 @@ package net.libraum.platypodes.entity.custom;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Dynamic;
 import net.libraum.platypodes.entity.ModEntities;
-import net.libraum.platypodes.entity.ai.PlatypusBrain;
+import net.libraum.platypodes.entity.ai.PlatypusAI;
+import net.libraum.platypodes.util.ModSensorType;
 import net.libraum.platypodes.items.ModItems;
 import net.libraum.platypodes.sound.ModSounds;
 import net.minecraft.core.BlockPos;
@@ -18,7 +19,6 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.RandomSource;
@@ -37,7 +37,7 @@ public class PlatypusEntity extends Axolotl {
         super(entityType, world);
     }
     protected static final ImmutableList<? extends SensorType<? extends Sensor<? super PlatypusEntity>>> SENSOR_TYPES = ImmutableList.of(
-             SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_ADULT, SensorType.HURT_BY
+             SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_ADULT, SensorType.HURT_BY, ModSensorType.PLATYPUS_TEMPTATIONS
     );
 
     public static AttributeSupplier.Builder createPlatypusAttributes() {
@@ -51,19 +51,17 @@ public class PlatypusEntity extends Axolotl {
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new PlatypusBreatheAirGoal(this, 0.5));
-        this.goalSelector.addGoal(2, new BreedGoal(this, 0.2));
-        this.goalSelector.addGoal(3, new TemptGoal(this,0.3, Ingredient.of(ModItems.YABBY),false));
     }
 
     @Override
     protected Brain<?> makeBrain(Dynamic<?> dynamic) {
-        return PlatypusBrain.create(Brain.provider(MEMORY_TYPES, SENSOR_TYPES).makeBrain(dynamic));
+        return PlatypusAI.create(Brain.provider(MEMORY_TYPES, SENSOR_TYPES).makeBrain(dynamic));
     }
 
     /** Breeding + Bucket */
     @Override
-    public boolean isFood(ItemStack stack) {
-        return stack.is(ModItems.YABBY);
+    public boolean isFood(ItemStack itemStack) {
+        return itemStack.is(ModItems.YABBY);
     }
 
     private static boolean shouldBabyBeDifferent(RandomSource random) {

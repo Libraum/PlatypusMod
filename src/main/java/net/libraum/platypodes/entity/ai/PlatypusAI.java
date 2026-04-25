@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import net.libraum.platypodes.entity.ModEntities;
 import net.libraum.platypodes.entity.custom.PlatypusEntity;
+import net.libraum.platypodes.items.ModItems;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,12 +27,13 @@ import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.schedule.Activity;
+import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.UnknownNullability;
 
 import java.util.Optional;
 
-public class PlatypusBrain {
+public class PlatypusAI {
     private static final UniformInt FOLLOW_RANGE = UniformInt.of(5, 16);
     private static final float LOVE_SPEED = 0.25F;
     private static final float LAND_SPEED = 0.2F;
@@ -69,8 +71,8 @@ public class PlatypusBrain {
                                 2,
                                 new RunOne<>(
                                         ImmutableList.of(
-                                                Pair.of(new FollowTemptation(PlatypusBrain::getTemptedSpeed), 1),
-                                                Pair.of(BabyFollowAdult.create(FOLLOW_RANGE, PlatypusBrain::getAdultFollowingSpeed), 1)
+                                                Pair.of(new FollowTemptation(PlatypusAI::getTemptedSpeed), 1),
+                                                Pair.of(BabyFollowAdult.create(FOLLOW_RANGE, PlatypusAI::getAdultFollowingSpeed), 1)
                                         )
                                 )
                         ),
@@ -85,7 +87,7 @@ public class PlatypusBrain {
                                         ImmutableList.of(
                                                 Pair.of(RandomStroll.swim(WATER_SPEED), 2),
                                                 Pair.of(RandomStroll.stroll(LAND_SPEED, false), 2),
-                                                Pair.of(SetWalkTargetFromLookTarget.create(PlatypusBrain::canGoToLookTarget, PlatypusBrain::getTemptedSpeed, 3), 3),
+                                                Pair.of(SetWalkTargetFromLookTarget.create(PlatypusAI::canGoToLookTarget, PlatypusAI::getTemptedSpeed, 3), 3),
                                                 Pair.of(BehaviorBuilder.triggerIf(Entity::isInWaterOrBubble), 5),
                                                 Pair.of(BehaviorBuilder.triggerIf(Entity::onGround), 5)
                                         )
@@ -117,5 +119,9 @@ public class PlatypusBrain {
 
     private static float getTemptedSpeed(LivingEntity entity) {
         return entity.isInWaterOrBubble() ? WATER_SPEED : LAND_SPEED;
+    }
+
+    public static Ingredient getTemptations() {
+        return Ingredient.of(ModItems.YABBY);
     }
 }
