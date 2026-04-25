@@ -101,30 +101,25 @@ public class PlatypusEntityModel<T extends PlatypusEntity & LerpingModel> extend
 
 	public void setupAnim(T axolotlEntity, float f, float g, float h, float i, float j) {
 		this.resetAngles(axolotlEntity, i, j);
-		if (axolotlEntity.isPlayingDead()) {
-			this.setPlayingDeadAngles(i);
+		boolean bl = g > 1.0E-5F || axolotlEntity.getXRot() != axolotlEntity.xRotO || axolotlEntity.getYRot() != axolotlEntity.yRotO;
+		if (axolotlEntity.isInWaterOrBubble()) {
+			if (bl) {
+				this.setMovingInWaterAngles(h, j);
+			} else {
+				this.setStandingInWaterAngles(h);
+			}
+
 			this.updateAnglesCache(axolotlEntity);
 		} else {
-			boolean bl = g > 1.0E-5F || axolotlEntity.getXRot() != axolotlEntity.xRotO || axolotlEntity.getYRot() != axolotlEntity.yRotO;
-			if (axolotlEntity.isInWaterOrBubble()) {
+			if (axolotlEntity.onGround()) {
 				if (bl) {
-					this.setMovingInWaterAngles(h, j);
+					this.setMovingOnGroundAngles(h, i);
 				} else {
-					this.setStandingInWaterAngles(h);
+					this.setStandingOnGroundAngles(h, i);
 				}
-
-				this.updateAnglesCache(axolotlEntity);
-			} else {
-				if (axolotlEntity.onGround()) {
-					if (bl) {
-						this.setMovingOnGroundAngles(h, i);
-					} else {
-						this.setStandingOnGroundAngles(h, i);
-					}
-				}
-
-				this.updateAnglesCache(axolotlEntity);
 			}
+
+			this.updateAnglesCache(axolotlEntity);
 		}
 	}
 
@@ -270,25 +265,9 @@ public class PlatypusEntityModel<T extends PlatypusEntity & LerpingModel> extend
 		this.setAngles(this.leftHindLeg, 1.8849558F, -0.4F * g, (float) (Math.PI / 2));
 		this.setAngles(this.leftFrontLeg, 1.8849558F * h + (float) (Math.PI), -0.2F * h - 0.1F, (float) (Math.PI / 2) + 0.5F);
 		this.copyLegAngles();
-		this.setAngles(this.rightFrontLeg, 1.8849558F * -h + (float) (Math.PI), -this.leftFrontLeg.yRot, -this.leftFrontLeg.zRot);
+		this.setAngles(this.rightFrontLeg, 1.8849558F * g + (float) (Math.PI), -0.2F * g - 0.1F, -this.leftFrontLeg.zRot);
 		this.head.yRot = this.lerpAngleDegrees(this.head.yRot, 0.0F);
 		this.head.zRot = this.lerpAngleDegrees(this.head.zRot, 0.0F);
-	}
-
-	private void setPlayingDeadAngles(float headYaw) {
-		this.setAngles(this.leftHindLeg, 1.4137167F, 1.0995574F, (float) (Math.PI / 4));
-		this.setAngles(this.leftFrontLeg, (float) (Math.PI / 4), 2.042035F, 0.0F);
-		this.body.xRot = this.lerpAngleDegrees(this.body.xRot, -0.15F);
-		this.body.zRot = this.lerpAngleDegrees(this.body.zRot, 0.35F);
-		this.copyLegAngles();
-		this.body.yRot = this.lerpAngleDegrees(this.body.yRot, headYaw * (float) (Math.PI / 180.0));
-		this.head.xRot = this.lerpAngleDegrees(this.head.xRot, 0.0F);
-		this.head.yRot = this.lerpAngleDegrees(this.head.yRot, 0.0F);
-		this.head.zRot = this.lerpAngleDegrees(this.head.zRot, 0.0F);
-		this.tail.yRot = this.lerpAngleDegrees(this.tail.yRot, 0.0F);
-		this.setAngles(this.topGills, 0.0F, 0.0F, 0.0F);
-		this.setAngles(this.leftGills, 0.0F, 0.0F, 0.0F);
-		this.setAngles(this.rightGills, 0.0F, 0.0F, 0.0F);
 	}
 
 	/**

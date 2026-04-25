@@ -3,9 +3,10 @@ package net.libraum.platypodes.entity.custom;
 import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Dynamic;
 import net.libraum.platypodes.entity.ModEntities;
-import net.libraum.platypodes.entity.ai.PlatypusBrain;
+import net.libraum.platypodes.entity.ai.PlatypusAI;
 import net.libraum.platypodes.items.ModItems;
 import net.libraum.platypodes.sound.ModSounds;
+import net.libraum.platypodes.util.ModSensorType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
@@ -39,7 +40,7 @@ public class PlatypusEntity extends Axolotl {
         super(entityType, world);
     }
     protected static final ImmutableList<? extends SensorType<? extends Sensor<? super PlatypusEntity>>> SENSOR_TYPES = ImmutableList.of(
-            SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_ADULT, SensorType.HURT_BY
+            SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_ADULT, SensorType.HURT_BY, ModSensorType.PLATYPUS_TEMPTATIONS
     );
 
     public static AttributeSupplier.Builder createPlatypusAttributes() {
@@ -53,19 +54,17 @@ public class PlatypusEntity extends Axolotl {
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new PlatypusBreathAirGoal(this, 0.5));
-        this.goalSelector.addGoal(1, new BreedGoal(this, 0.2));
-        this.goalSelector.addGoal(2, new TemptGoal(this,0.3, Ingredient.of(ModItems.YABBY),false));
     }
 
     @Override
     protected Brain<?> makeBrain(Dynamic<?> dynamic) {
-        return PlatypusBrain.create(Brain.provider(MEMORY_TYPES, SENSOR_TYPES).makeBrain(dynamic));
+        return PlatypusAI.create(Brain.provider(MEMORY_TYPES, SENSOR_TYPES).makeBrain(dynamic));
     }
 
     /** Breeding + Bucket */
     @Override
-    public boolean isFood(ItemStack stack) {
-        return stack.is(ModItems.YABBY);
+    public boolean isFood(ItemStack itemStack) {
+        return itemStack.is(ModItems.YABBY);
     }
 
     private static boolean shouldBabyBeDifferent(RandomSource random) {
