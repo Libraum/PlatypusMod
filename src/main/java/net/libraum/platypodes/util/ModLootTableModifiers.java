@@ -3,6 +3,7 @@ package net.libraum.platypodes.util;
 import net.fabricmc.fabric.api.loot.v2.LootTableEvents;
 import net.libraum.platypodes.items.ModItems;
 import net.minecraft.world.level.storage.loot.LootPool;
+import net.minecraft.world.level.storage.loot.predicates.LocationCheck;
 import net.minecraft.world.level.storage.loot.predicates.LootItemRandomChanceCondition;
 import net.minecraft.world.level.storage.loot.entries.LootItem;
 import net.minecraft.world.level.storage.loot.functions.SetItemCountFunction;
@@ -16,15 +17,14 @@ public class ModLootTableModifiers {
 
     public static void modifyLootTables() {
                 LootTableEvents.MODIFY.register((resourceManager, lootManager, id, tableBuilder, source) -> {
-            if(Village_Fisher_Chest_ID.equals(id)) {
-                LootPool.Builder poolBuilder = LootPool.lootPool()
-                        .setRolls(ConstantValue.exactly(1))
-                        .when(LootItemRandomChanceCondition.randomChance(0.33f))
-                        .add(LootItem.lootTableItem(ModItems.YABBY))
-                        .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0f, 3.0f)).build());
-
-                tableBuilder.pool(poolBuilder.build());
-            }
-        });
+                    if(Village_Fisher_Chest_ID.equals(id)) {
+                        LootPool.Builder poolBuilder = LootPool.lootPool()
+                                .setRolls(ConstantValue.exactly(1))
+                                .when(LootItemRandomChanceCondition.randomChance(0.33f))
+                                .add(LootItem.lootTableItem(ModItems.YABBY))
+                                .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0f, 3.0f)).build());
+                        tableBuilder.pool(poolBuilder.build());
+                     }
+                });
     }
 }
