@@ -8,7 +8,6 @@ import net.libraum.platypodes.items.ModItems;
 import net.libraum.platypodes.sound.ModSounds;
 import net.libraum.platypodes.util.ModSensorType;
 import net.minecraft.core.BlockPos;
-import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
@@ -18,6 +17,7 @@ import net.minecraft.world.entity.ai.sensing.SensorType;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.server.level.ServerLevel;
@@ -33,6 +33,8 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumSet;
+
+import static net.minecraft.world.entity.animal.WaterAnimal.checkSurfaceWaterAnimalSpawnRules;
 
 public class PlatypusEntity extends Axolotl {
     public PlatypusEntity(EntityType<? extends PlatypusEntity> entityType, Level world) {
@@ -50,9 +52,17 @@ public class PlatypusEntity extends Axolotl {
     }
 
     public static boolean checkPlatypusSpawnRules(EntityType<? extends LivingEntity> entityType, LevelAccessor levelAccessor, MobSpawnType mobSpawnType, BlockPos blockPos, RandomSource randomSource) {
-        int i = levelAccessor.getSeaLevel();
-        int j = i - 13;
-        return blockPos.getY() >= j && blockPos.getY() <= i && levelAccessor.getFluidState(blockPos.below()).is(FluidTags.WATER) && levelAccessor.getBlockState(blockPos.above()).is(Blocks.WATER);
+        float na = 0.7403491f;
+        float nz = 0.8348362f;
+        float ka = 0.21548219f;
+        float kz = 0.26870248f;
+        if (levelAccessor.getTimeOfDay(0) >= na && levelAccessor.getTimeOfDay(0) <= nz && randomSource.nextFloat() >= levelAccessor.getTimeOfDay(0)) {
+            return checkSurfaceWaterAnimalSpawnRules((EntityType<? extends WaterAnimal>) entityType, levelAccessor, mobSpawnType, blockPos, randomSource);
+        }
+        if (levelAccessor.getTimeOfDay(0) >= ka && levelAccessor.getTimeOfDay(0) <= kz && randomSource.nextFloat() <= levelAccessor.getTimeOfDay(0)) {
+            return checkSurfaceWaterAnimalSpawnRules((EntityType<? extends WaterAnimal>) entityType, levelAccessor, mobSpawnType, blockPos, randomSource);
+        }
+        return false;
     }
 
     /** Brain */
