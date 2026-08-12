@@ -17,6 +17,8 @@ repositories {
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
 
+	maven { url = "https://maven.midnightdust.eu/releases" }
+
 	flatDir name: "mods", dir: "mods"
 }
 
@@ -32,6 +34,8 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+
+	modImplementation include ("eu.midnightdust:midnightlib:${project.midnightlib_version}")
 
 	fileTree("mods").visit {FileVisitDetails details ->
 		def name = details.file.name

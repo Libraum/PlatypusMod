@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.mojang.serialization.Dynamic;
 import net.libraum.platypodes.entity.ModEntities;
 import net.libraum.platypodes.entity.ai.PlatypusAI;
+import net.libraum.platypodes.util.ModConfig;
 import net.libraum.platypodes.util.ModSensorType;
 import net.libraum.platypodes.items.ModItems;
 import net.libraum.platypodes.sound.ModSounds;
@@ -46,22 +47,37 @@ public class PlatypusEntity extends Axolotl {
 
     public static AttributeSupplier.Builder createPlatypusAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 14)
-                .add(Attributes.MOVEMENT_SPEED, 1.0)
-                .add(Attributes.ATTACK_DAMAGE, 2.0);
+                .add(Attributes.MAX_HEALTH, 14.0) /* Default: 14.0 */
+                .add(Attributes.MOVEMENT_SPEED, 1.0) /* Default: 1.0 */
+                .add(Attributes.ATTACK_DAMAGE, 2.0); /* Default: 2.0 */
     }
 
+    /** Spawn Conditions */
 public static boolean checkPlatypusSpawnRules(EntityType<? extends LivingEntity> entityType, LevelAccessor levelAccessor, MobSpawnType mobSpawnType, BlockPos blockPos, RandomSource randomSource) {
-    float na = 0.7403491f;
-    float nz = 0.8348362f;
-    float ka = 0.21548219f;
-    float kz = 0.26870248f;
-        if (levelAccessor.getTimeOfDay(0) >= na && levelAccessor.getTimeOfDay(0) <= nz && randomSource.nextFloat() >= levelAccessor.getTimeOfDay(0)) {
-            return checkSurfaceWaterAnimalSpawnRules((EntityType<? extends WaterAnimal>) entityType, levelAccessor, mobSpawnType, blockPos, randomSource);
+    float na = 0.7403491f; /* Dawn Start */
+    float nz = 0.8348362f; /* Dawn End */
+    float ka = 0.21548219f; /* Dusk Start */
+    float kz = 0.26870248f; /* Dusk End */
+    if (ModConfig.enableSpawns) {
+        if (ModConfig.spawnDuring == ModConfig.SpawnDuring.DAWNANDDUSK) {
+            if (levelAccessor.getTimeOfDay(0) >= na && levelAccessor.getTimeOfDay(0) <= nz && randomSource.nextFloat() < 0.15f) {
+                return checkSurfaceWaterAnimalSpawnRules((EntityType<? extends WaterAnimal>) entityType, levelAccessor, mobSpawnType, blockPos, randomSource);
+            }
+            if (levelAccessor.getTimeOfDay(0) >= ka && levelAccessor.getTimeOfDay(0) <= kz && randomSource.nextFloat() < 0.15f) {
+                return checkSurfaceWaterAnimalSpawnRules((EntityType<? extends WaterAnimal>) entityType, levelAccessor, mobSpawnType, blockPos, randomSource);
+            }
         }
-        if (levelAccessor.getTimeOfDay(0) >= ka && levelAccessor.getTimeOfDay(0) <= kz && randomSource.nextFloat() <= levelAccessor.getTimeOfDay(0)) {
-            return checkSurfaceWaterAnimalSpawnRules((EntityType<? extends WaterAnimal>) entityType, levelAccessor, mobSpawnType, blockPos, randomSource);
+        if (ModConfig.spawnDuring == ModConfig.SpawnDuring.NIGHT) {
+            if (levelAccessor.getTimeOfDay(0) >= ka && levelAccessor.getTimeOfDay(0) <= na && randomSource.nextFloat() < 0.15f) {
+                return checkSurfaceWaterAnimalSpawnRules((EntityType<? extends WaterAnimal>) entityType, levelAccessor, mobSpawnType, blockPos, randomSource);
+            }
         }
+        if (ModConfig.spawnDuring == ModConfig.SpawnDuring.ALLDAY) {
+            if (randomSource.nextFloat() < 0.15f) {
+                return checkSurfaceWaterAnimalSpawnRules((EntityType<? extends WaterAnimal>) entityType, levelAccessor, mobSpawnType, blockPos, randomSource);
+            }
+        }
+    }
     return false;
     }
 
@@ -83,7 +99,7 @@ public static boolean checkPlatypusSpawnRules(EntityType<? extends LivingEntity>
     }
 
     private static boolean shouldBabyBeDifferent(RandomSource random) {
-        return random.nextInt(1200) == 0;
+        return random.nextInt(ModConfig.rareVariantChance) == 0; /* Default: 1200 */
     }
 
     @Nullable
