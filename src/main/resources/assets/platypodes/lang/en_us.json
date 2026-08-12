@@ -15,5 +15,10 @@
   "subtitles.entity.platypus.splash": "Platypus splashes",
   "subtitles.entity.platypus.swim": "Platypus swims",
   "subtitles.item.bucket.fill_platypus": "Platypus scooped",
-  "subtitles.item.bucket.empty": "Bucket empties"
+  "subtitles.item.bucket.empty": "Bucket empties",
+
+  "platypodes.midnightconfig.title": "Platypodes Config",
+  "platypodes.midnightconfig.enum.SpawnDuring.DAWNANDDUSK": "Dawn and Dusk",
+  "platypodes.midnightconfig.enum.SpawnDuring.NIGHT": "Night",
+  "platypodes.midnightconfig.enum.SpawnDuring.ALLDAY": "All Day"
 }

@@ -16,6 +16,11 @@ repositories {
 	// Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
+
+	maven { url = "https://maven.midnightdust.eu/releases" }
+	maven { url = "https://maven.terraformersmc.com/"}
+
+	flatDir name: "mods", dir: "mods"
 }
 
 fabricApi {
@@ -30,7 +35,15 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	
+
+	modImplementation include ("eu.midnightdust:midnightlib:${project.midnightlib_version}")
+	modImplementation("com.terraformersmc:modmenu:${project.modmenu_version}")
+
+	fileTree("mods").visit { FileVisitDetails details ->
+		def name = details.file.name
+		name = name.substring(0, name.lastIndexOf('.'))
+		modImplementation("mods:" + name + ":")
+	}
 }
 
 processResources {
