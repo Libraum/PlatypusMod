@@ -18,7 +18,22 @@
   "subtitles.item.bucket.empty": "Bucket empties",
 
   "platypodes.midnightconfig.title": "Platypodes Config",
+
+  "platypodes.midnightconfig.spawning": "Platypus Spawning:",
+  "platypodes.midnightconfig.enableSpawns": "Enable Spawning",
+  "platypodes.midnightconfig.spawnDuring": "Spawn During",
   "platypodes.midnightconfig.enum.SpawnDuring.DAWNANDDUSK": "Dawn and Dusk",
   "platypodes.midnightconfig.enum.SpawnDuring.NIGHT": "Night",
-  "platypodes.midnightconfig.enum.SpawnDuring.ALLDAY": "All Day"
+  "platypodes.midnightconfig.enum.SpawnDuring.ALLDAY": "All Day",
+  "platypodes.midnightconfig.rareVariantChance": "Rare Variant Chance",
+  "platypodes.midnightconfig.spawnWeight": "Spawn Weight",
+  "platypodes.midnightconfig.minSpawnGroup": "Minimum Group Size",
+  "platypodes.midnightconfig.maxSpawnGroup": "Maximum Group Size",
+
+  "platypodes.midnightconfig.yabbySources": "Yabby Item Sources:",
+  "platypodes.midnightconfig.seagrassDrops": "Seagrass Drop Chance",
+  "platypodes.midnightconfig.fisherChests": "Village Fisher Chests",
+  "platypodes.midnightconfig.fisherTrades": "Fisher Villager Trades",
+  "platypodes.midnightconfig.wanderingTrades": "Wandering Trader Trades",
+  "platypodes.midnightconfig.lootPoolRestart": "*Any changes to Loot Pools require a restart of the game and/or server before taking affect."
 }
