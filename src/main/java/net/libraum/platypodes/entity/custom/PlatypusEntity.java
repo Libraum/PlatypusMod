@@ -9,7 +9,18 @@ import net.libraum.platypodes.util.ModSensorType;
 import net.libraum.platypodes.items.ModItems;
 import net.libraum.platypodes.sound.ModSounds;
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
+import net.minecraft.util.TimeUtil;
+import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.Brain;
 import net.minecraft.world.entity.ai.goal.*;
@@ -20,10 +31,15 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.animal.WaterAnimal;
 import net.minecraft.world.entity.animal.axolotl.Axolotl;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemUtils;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionUtils;
+import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
@@ -37,18 +53,42 @@ import java.util.EnumSet;
 
 import static net.minecraft.world.entity.animal.WaterAnimal.checkSurfaceWaterAnimalSpawnRules;
 
-public class PlatypusEntity extends Axolotl {
-    public PlatypusEntity(EntityType<? extends PlatypusEntity> entityType, Level world) {
-        super(entityType, world);
+public class PlatypusEntity extends Axolotl implements NeutralMob {
+    private static final EntityDataAccessor<Integer> DATA_POISON_SUPPLY_ID;
+    private static final UniformInt PERSISTENT_ANGER_TIME = TimeUtil.rangeOfSeconds(20, 39);
+    private int remainingPersistentAngerTime;
+    @Nullable
+    private UUID persistentAngerTarget;
+
+    public PlatypusEntity(EntityType<? extends PlatypusEntity> entityType, Level level) {
+        super(entityType, level);
     }
     protected static final ImmutableList<? extends SensorType<? extends Sensor<? super PlatypusEntity>>> SENSOR_TYPES = ImmutableList.of(
              SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_ADULT, SensorType.HURT_BY, ModSensorType.PLATYPUS_TEMPTATIONS
     );
+    static {
+        DATA_POISON_SUPPLY_ID = SynchedEntityData.defineId(PlatypusEntity.class, EntityDataSerializers.INT);
+    }
+
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        this.entityData.define(DATA_POISON_SUPPLY_ID, this.getMaxPoisonSupply());
+    }
+
+    public void addAdditionalSaveData(CompoundTag compoundTag) {
+        super.addAdditionalSaveData(compoundTag);
+        compoundTag.putInt("Poison", this.getPoisonSupply());
+    }
+
+    public void readAdditionalSaveData(CompoundTag compoundTag) {
+        super.readAdditionalSaveData(compoundTag);
+        this.setPoisonSupply(compoundTag.getInt("Poison"));
+    }
 
     public static AttributeSupplier.Builder createPlatypusAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 14.0) /* Default: 14.0 */
-                .add(Attributes.MOVEMENT_SPEED, 1.0) /* Default: 1.0 */
+                .add(Attributes.MOVEMENT_SPEED, 0.5) /* Default: 1.0 */
                 .add(Attributes.ATTACK_DAMAGE, 2.0); /* Default: 2.0 */
     }
 
@@ -105,8 +145,8 @@ public static boolean checkPlatypusSpawnRules(EntityType<? extends LivingEntity>
     @Nullable
     @Override
     public AgeableMob getBreedOffspring(ServerLevel world, AgeableMob entity) {
-        PlatypusEntity platypusEntity = ModEntities.PLATYPUS.create(world);
-        if (platypusEntity != null) {
+        PlatypusEntity platypus = ModEntities.PLATYPUS.create(world);
+        if (platypus != null) {
             Variant variant;
             if (shouldBabyBeDifferent(this.random)) {
                 variant = PlatypusEntity.Variant.getRareSpawnVariant(this.random);
@@ -114,16 +154,33 @@ public static boolean checkPlatypusSpawnRules(EntityType<? extends LivingEntity>
                 variant = this.random.nextBoolean() ? this.getVariant() : ((PlatypusEntity)entity).getVariant();
             }
 
-            platypusEntity.setVariant(variant);
-            platypusEntity.setPersistenceRequired();
+            platypus.setVariant(variant);
+            platypus.setPersistenceRequired();
         }
 
-        return platypusEntity;
+        return platypus;
     }
 
+    /** Interact */
     @Override
     public ItemStack getBucketItemStack() {
         return new ItemStack(ModItems.PLATYPUS_BUCKET);
+    }
+
+    @Override
+    public InteractionResult mobInteract(Player player, InteractionHand interactionHand) {
+        ItemStack itemStack = player.getItemInHand(interactionHand);
+        if (itemStack.is(Items.GLASS_BOTTLE) && PlatypusEntity.this.getPoisonSupply() == 6000) {
+            player.playSound(SoundEvents.BOTTLE_FILL, 1.0f, 1.0f);
+            ItemStack itemStack2 = ItemUtils.createFilledResult(itemStack, player, PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.POISON));
+            player.setItemInHand(interactionHand, itemStack2);
+            if (!player.isCreative()) {
+                PlatypusEntity.this.setPoisonSupply(0);
+            }
+            return InteractionResult.sidedSuccess(this.level().isClientSide);
+        } else {
+            return super.mobInteract(player, interactionHand);
+        }
     }
 
     /** Breathe on land + drowning */
@@ -148,6 +205,52 @@ public static boolean checkPlatypusSpawnRules(EntityType<? extends LivingEntity>
     @Override
     public boolean canBreatheUnderwater() {
         return false;
+    }
+
+    /** Poison Handler */
+    public void baseTick() {
+        int i = this.getPoisonSupply();
+        super.baseTick();
+        if (!this.isNoAi()) {
+            this.handlePoisonSupply(i);
+        }
+    }
+
+    public int getMaxPoisonSupply() {
+        return 6000;
+    }
+
+    public int getPoisonSupply() {
+        return this.entityData.get(DATA_POISON_SUPPLY_ID);
+    }
+
+    public void setPoisonSupply(int i) {
+        this.entityData.set(DATA_POISON_SUPPLY_ID, i);
+    }
+
+    protected void handlePoisonSupply(int tick) {
+        if (this.isAlive() && !this.isBaby()) {
+            this.setPoisonSupply(tick + 1);
+            if (this.getPoisonSupply() >= 6000) {
+                this.setPoisonSupply(this.getMaxPoisonSupply());
+            }
+        } else {
+            this.setPoisonSupply(0);
+        }
+    }
+
+    @Override
+    public boolean doHurtTarget(Entity entity) {
+        if (!super.doHurtTarget(entity)) {
+            return false;
+        }
+
+        if (entity instanceof LivingEntity) {
+            ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.POISON, 100), this);
+            PlatypusEntity.this.setPoisonSupply(0);
+        }
+
+        return true;
     }
 
     /** Sound Events */
