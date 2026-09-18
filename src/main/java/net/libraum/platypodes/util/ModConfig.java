@@ -4,10 +4,11 @@ import eu.midnightdust.lib.config.MidnightConfig;
 
 public class ModConfig extends MidnightConfig {
     /** Platypus Attributes */
-//    @Comment(centered = true) public static Comment attributes;
+    @Comment(centered = true) public static Comment attributes;
 //    @Entry public static double healthMultiplier = 14.0;
 //    @Entry public static double speedMultiplier = 1.0;
-//    @Entry(category = ATTRIBUTES) public static double attackMultiplier = 2.0;
+//    @Entry public static double attackMultiplier = 2.0;
+    @Entry public static int maxAirSupply = 6000;
 //    @Comment(centered = true) public static Comment attributesRestart;
 
     /** Platypus Spawning */

@@ -199,8 +199,8 @@ public static boolean checkPlatypusSpawnRules(EntityType<? extends LivingEntity>
 
     @Override
     public int getMaxAirSupply() {
-        return 6000;
-    }
+        return ModConfig.maxAirSupply;
+    } /* Default: 6000 */
 
     @Override
     public boolean canBreatheUnderwater() {

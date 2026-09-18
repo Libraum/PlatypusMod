@@ -19,6 +19,8 @@
 
   "platypodes.midnightconfig.title": "Platypodes Config",
 
+  "platypodes.midnightconfig.maxAirSupply": "Max Air Supply",
+
   "platypodes.midnightconfig.spawning": "Platypus Spawning:",
   "platypodes.midnightconfig.enableSpawns": "Enable Spawning",
   "platypodes.midnightconfig.spawnDuring": "Spawn During",
