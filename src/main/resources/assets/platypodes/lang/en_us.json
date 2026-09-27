@@ -20,6 +20,8 @@
   "platypodes.midnightconfig.title": "Platypodes Config",
 
   "platypodes.midnightconfig.maxAirSupply": "Max Air Supply",
+  "platypodes.midnightconfig.maxPoisonSupply": "Max Poison Supply",
+  "platypodes.midnightconfig.attributesRestart": "*Some changes to Attributes may require a restart of the game and/or server before taking affect.",
 
   "platypodes.midnightconfig.spawning": "Platypus Spawning:",
   "platypodes.midnightconfig.enableSpawns": "Enable Spawning",

@@ -5,7 +5,7 @@ import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.libraum.platypodes.entity.ModEntities;
-import net.libraum.platypodes.entity.custom.PlatypusEntity;
+import net.libraum.platypodes.entity.custom.Platypus;
 import net.libraum.platypodes.items.ModItemGroups;
 import net.libraum.platypodes.items.ModItems;
 import net.libraum.platypodes.sound.ModSounds;
@@ -32,7 +32,7 @@ public class Platypodes implements ModInitializer {
 
 		ModSounds.registerSounds();
 
-		FabricDefaultAttributeRegistry.register(ModEntities.PLATYPUS, PlatypusEntity.createPlatypusAttributes());
+		FabricDefaultAttributeRegistry.register(ModEntities.PLATYPUS, Platypus.createPlatypusAttributes());
 
 		MidnightConfig.init(MOD_ID, ModConfig.class);
 	}

@@ -15,8 +15,6 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
-import net.minecraft.util.TimeUtil;
-import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -53,26 +51,21 @@ import java.util.EnumSet;
 
 import static net.minecraft.world.entity.animal.WaterAnimal.checkSurfaceWaterAnimalSpawnRules;
 
-public class PlatypusEntity extends Axolotl implements NeutralMob {
-    private static final EntityDataAccessor<Integer> DATA_POISON_SUPPLY_ID;
-    private static final UniformInt PERSISTENT_ANGER_TIME = TimeUtil.rangeOfSeconds(20, 39);
-    private int remainingPersistentAngerTime;
-    @Nullable
-    private UUID persistentAngerTarget;
-
-    public PlatypusEntity(EntityType<? extends PlatypusEntity> entityType, Level level) {
+public class Platypus extends Axolotl {
+    private static final EntityDataAccessor<Integer> DATA_POISON_SUPPLY;
+    public Platypus(EntityType<? extends Platypus> entityType, Level level) {
         super(entityType, level);
     }
-    protected static final ImmutableList<? extends SensorType<? extends Sensor<? super PlatypusEntity>>> SENSOR_TYPES = ImmutableList.of(
+    protected static final ImmutableList<? extends SensorType<? extends Sensor<? super Platypus>>> SENSOR_TYPES = ImmutableList.of(
              SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_ADULT, SensorType.HURT_BY, ModSensorType.PLATYPUS_TEMPTATIONS
     );
     static {
-        DATA_POISON_SUPPLY_ID = SynchedEntityData.defineId(PlatypusEntity.class, EntityDataSerializers.INT);
+        DATA_POISON_SUPPLY = SynchedEntityData.defineId(Platypus.class, EntityDataSerializers.INT);
     }
 
     protected void defineSynchedData() {
         super.defineSynchedData();
-        this.entityData.define(DATA_POISON_SUPPLY_ID, this.getMaxPoisonSupply());
+        this.entityData.define(DATA_POISON_SUPPLY, this.getMaxPoisonSupply());
     }
 
     public void addAdditionalSaveData(CompoundTag compoundTag) {
@@ -88,49 +81,60 @@ public class PlatypusEntity extends Axolotl implements NeutralMob {
     public static AttributeSupplier.Builder createPlatypusAttributes() {
         return Mob.createMobAttributes()
                 .add(Attributes.MAX_HEALTH, 14.0) /* Default: 14.0 */
-                .add(Attributes.MOVEMENT_SPEED, 0.5) /* Default: 1.0 */
+                .add(Attributes.MOVEMENT_SPEED, 1.0) /* Default: 1.0 */
                 .add(Attributes.ATTACK_DAMAGE, 2.0); /* Default: 2.0 */
     }
 
     /** Spawn Conditions */
-public static boolean checkPlatypusSpawnRules(EntityType<? extends LivingEntity> entityType, LevelAccessor levelAccessor, MobSpawnType mobSpawnType, BlockPos blockPos, RandomSource randomSource) {
-    float na = 0.7403491f; /* Dawn Start */
-    float nz = 0.8348362f; /* Dawn End */
-    float ka = 0.21548219f; /* Dusk Start */
-    float kz = 0.26870248f; /* Dusk End */
-    if (ModConfig.enableSpawns) {
-        if (ModConfig.spawnDuring == ModConfig.SpawnDuring.DAWNANDDUSK) {
-            if (levelAccessor.getTimeOfDay(0) >= na && levelAccessor.getTimeOfDay(0) <= nz && randomSource.nextFloat() < 0.15f) {
-                return checkSurfaceWaterAnimalSpawnRules((EntityType<? extends WaterAnimal>) entityType, levelAccessor, mobSpawnType, blockPos, randomSource);
+    public static boolean checkPlatypusSpawnRules(EntityType<? extends LivingEntity> entityType, LevelAccessor levelAccessor, MobSpawnType mobSpawnType, BlockPos blockPos, RandomSource randomSource) {
+        float na = 0.7403491f; /* Dawn Start */
+        float nz = 0.8348362f; /* Dawn End */
+        float ka = 0.21548219f; /* Dusk Start */
+        float kz = 0.26870248f; /* Dusk End */
+        if (ModConfig.enableSpawns) {
+            if (ModConfig.spawnDuring == ModConfig.SpawnDuring.DAWNANDDUSK) {
+                if (levelAccessor.getTimeOfDay(0) >= na && levelAccessor.getTimeOfDay(0) <= nz && randomSource.nextFloat() < 0.15f) {
+                    return checkSurfaceWaterAnimalSpawnRules((EntityType<? extends WaterAnimal>) entityType, levelAccessor, mobSpawnType, blockPos, randomSource);
+                }
+                if (levelAccessor.getTimeOfDay(0) >= ka && levelAccessor.getTimeOfDay(0) <= kz && randomSource.nextFloat() < 0.15f) {
+                    return checkSurfaceWaterAnimalSpawnRules((EntityType<? extends WaterAnimal>) entityType, levelAccessor, mobSpawnType, blockPos, randomSource);
+                }
             }
-            if (levelAccessor.getTimeOfDay(0) >= ka && levelAccessor.getTimeOfDay(0) <= kz && randomSource.nextFloat() < 0.15f) {
-                return checkSurfaceWaterAnimalSpawnRules((EntityType<? extends WaterAnimal>) entityType, levelAccessor, mobSpawnType, blockPos, randomSource);
+            if (ModConfig.spawnDuring == ModConfig.SpawnDuring.NIGHT) {
+                if (levelAccessor.getTimeOfDay(0) >= ka && levelAccessor.getTimeOfDay(0) <= na && randomSource.nextFloat() < 0.15f) {
+                    return checkSurfaceWaterAnimalSpawnRules((EntityType<? extends WaterAnimal>) entityType, levelAccessor, mobSpawnType, blockPos, randomSource);
+                }
+            }
+            if (ModConfig.spawnDuring == ModConfig.SpawnDuring.ALLDAY) {
+                if (randomSource.nextFloat() < 0.15f) {
+                    return checkSurfaceWaterAnimalSpawnRules((EntityType<? extends WaterAnimal>) entityType, levelAccessor, mobSpawnType, blockPos, randomSource);
+                }
             }
         }
-        if (ModConfig.spawnDuring == ModConfig.SpawnDuring.NIGHT) {
-            if (levelAccessor.getTimeOfDay(0) >= ka && levelAccessor.getTimeOfDay(0) <= na && randomSource.nextFloat() < 0.15f) {
-                return checkSurfaceWaterAnimalSpawnRules((EntityType<? extends WaterAnimal>) entityType, levelAccessor, mobSpawnType, blockPos, randomSource);
-            }
-        }
-        if (ModConfig.spawnDuring == ModConfig.SpawnDuring.ALLDAY) {
-            if (randomSource.nextFloat() < 0.15f) {
-                return checkSurfaceWaterAnimalSpawnRules((EntityType<? extends WaterAnimal>) entityType, levelAccessor, mobSpawnType, blockPos, randomSource);
-            }
-        }
-    }
-    return false;
+            return false;
     }
 
-    /** Brain */
+    /** Behaviour */
     @Override
     protected void registerGoals() {
         this.goalSelector.addGoal(0, new PlatypusBreatheAirGoal(this, 0.5));
+//        this.goalSelector.addGoal(1, new PanicGoal(this, 0.5));
+//        this.goalSelector.addGoal(1, new BreedGoal(this, 1.0));
+//        this.goalSelector.addGoal(2, new TemptGoal(this, 0.5, Ingredient.of(ModItems.YABBY), false));
+//        this.goalSelector.addGoal(2, new FollowParentGoal(this, 0.5));
+//        this.goalSelector.addGoal(4, new PlatypusRandomStrollGoal(this, 0.4));
+//        this.goalSelector.addGoal(4, new PlatypusRandomSwimmingGoal(this, 1.0, 1));
+//        this.goalSelector.addGoal(5, new PlatypusGoToWaterGoal(this, 0.5));
+//        this.goalSelector.addGoal(3, new PlatypusGoToBeachGoal(this, 1.0));
+//        this.goalSelector.addGoal(7, new RandomLookAroundGoal(this));
     }
 
     @Override
     protected Brain<?> makeBrain(Dynamic<?> dynamic) {
         return PlatypusAI.create(Brain.provider(MEMORY_TYPES, SENSOR_TYPES).makeBrain(dynamic));
     }
+
+    public Brain<Axolotl> getBrain() { return super.getBrain(); }
 
     /** Breeding + Bucket */
     @Override
@@ -145,13 +149,13 @@ public static boolean checkPlatypusSpawnRules(EntityType<? extends LivingEntity>
     @Nullable
     @Override
     public AgeableMob getBreedOffspring(ServerLevel world, AgeableMob entity) {
-        PlatypusEntity platypus = ModEntities.PLATYPUS.create(world);
+        Platypus platypus = ModEntities.PLATYPUS.create(world);
         if (platypus != null) {
             Variant variant;
             if (shouldBabyBeDifferent(this.random)) {
-                variant = PlatypusEntity.Variant.getRareSpawnVariant(this.random);
+                variant = Platypus.Variant.getRareSpawnVariant(this.random);
             } else {
-                variant = this.random.nextBoolean() ? this.getVariant() : ((PlatypusEntity)entity).getVariant();
+                variant = this.random.nextBoolean() ? this.getVariant() : ((Platypus)entity).getVariant();
             }
 
             platypus.setVariant(variant);
@@ -163,19 +167,17 @@ public static boolean checkPlatypusSpawnRules(EntityType<? extends LivingEntity>
 
     /** Interact */
     @Override
-    public ItemStack getBucketItemStack() {
-        return new ItemStack(ModItems.PLATYPUS_BUCKET);
-    }
+    public ItemStack getBucketItemStack() { return new ItemStack(ModItems.PLATYPUS_BUCKET); }
 
     @Override
     public InteractionResult mobInteract(Player player, InteractionHand interactionHand) {
         ItemStack itemStack = player.getItemInHand(interactionHand);
-        if (itemStack.is(Items.GLASS_BOTTLE) && PlatypusEntity.this.getPoisonSupply() == 6000) {
+        if (itemStack.is(Items.GLASS_BOTTLE) && Platypus.this.getPoisonSupply() == this.getMaxPoisonSupply()) {
             player.playSound(SoundEvents.BOTTLE_FILL, 1.0f, 1.0f);
             ItemStack itemStack2 = ItemUtils.createFilledResult(itemStack, player, PotionUtils.setPotion(new ItemStack(Items.POTION), Potions.POISON));
             player.setItemInHand(interactionHand, itemStack2);
             if (!player.isCreative()) {
-                PlatypusEntity.this.setPoisonSupply(0);
+                Platypus.this.setPoisonSupply(0);
             }
             return InteractionResult.sidedSuccess(this.level().isClientSide);
         } else {
@@ -217,21 +219,21 @@ public static boolean checkPlatypusSpawnRules(EntityType<? extends LivingEntity>
     }
 
     public int getMaxPoisonSupply() {
-        return 6000;
-    }
+        return ModConfig.maxPoisonSupply;
+    } /* Default: 6000 */
 
     public int getPoisonSupply() {
-        return this.entityData.get(DATA_POISON_SUPPLY_ID);
+        return this.entityData.get(DATA_POISON_SUPPLY);
     }
 
     public void setPoisonSupply(int i) {
-        this.entityData.set(DATA_POISON_SUPPLY_ID, i);
+        this.entityData.set(DATA_POISON_SUPPLY, i);
     }
 
     protected void handlePoisonSupply(int tick) {
         if (this.isAlive() && !this.isBaby()) {
             this.setPoisonSupply(tick + 1);
-            if (this.getPoisonSupply() >= 6000) {
+            if (this.getPoisonSupply() >= this.getMaxPoisonSupply()) {
                 this.setPoisonSupply(this.getMaxPoisonSupply());
             }
         } else {
@@ -240,17 +242,18 @@ public static boolean checkPlatypusSpawnRules(EntityType<? extends LivingEntity>
     }
 
     @Override
-    public boolean doHurtTarget(Entity entity) {
-        if (!super.doHurtTarget(entity)) {
-            return false;
+    public boolean hurt(DamageSource damageSource, float f) {
+        boolean bl = super.hurt(damageSource, f);
+        if (bl && damageSource.getDirectEntity() instanceof LivingEntity entity) {
+            if (this.isAlive()
+                    && !damageSource.isCreativePlayer()
+                    && this.getPoisonSupply() == this.getMaxPoisonSupply()) {
+                entity.addEffect(new MobEffectInstance(MobEffects.POISON, 100));
+                this.playSound(ModSounds.ENTITY_PLATYPUS_ATTACK, 1.0F, 1.0F);
+                this.setPoisonSupply(0);
+            }
         }
-
-        if (entity instanceof LivingEntity) {
-            ((LivingEntity) entity).addEffect(new MobEffectInstance(MobEffects.POISON, 100), this);
-            PlatypusEntity.this.setPoisonSupply(0);
-        }
-
-        return true;
+        return bl;
     }
 
     /** Sound Events */
@@ -292,17 +295,17 @@ public static boolean checkPlatypusSpawnRules(EntityType<? extends LivingEntity>
 
     /** Custom Goals */
     static class PlatypusBreatheAirGoal extends Goal {
-        private final PathfinderMob mob;
+        private final Platypus platypus;
         private final double speed;
 
-        public PlatypusBreatheAirGoal(PathfinderMob pathfinderMob, Double d) {
-            this.mob = pathfinderMob;
+        public PlatypusBreatheAirGoal(Platypus platypus, Double d) {
+            this.platypus = platypus;
             this.speed = d;
             this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
         }
 
         public boolean canUse() {
-            return this.mob.getAirSupply() < 140;
+            return this.platypus.getAirSupply() < 140;
         }
 
         public boolean canContinueToUse() {
@@ -319,27 +322,27 @@ public static boolean checkPlatypusSpawnRules(EntityType<? extends LivingEntity>
 
         private void findAirPosition() {
             Iterable<BlockPos> iterable = BlockPos.betweenClosed(
-                    Mth.floor(this.mob.getX() - (double)1.0F),
-                    this.mob.getBlockY(),
-                    Mth.floor(this.mob.getZ() - (double)1.0F),
-                    Mth.floor(this.mob.getX() + (double)1.0F),
-                    Mth.floor(this.mob.getY() + (double)8.0F),
-                    Mth.floor(this.mob.getZ() + (double)1.0F)
+                    Mth.floor(this.platypus.getX() - (double)1.0F),
+                    this.platypus.getBlockY(),
+                    Mth.floor(this.platypus.getZ() - (double)1.0F),
+                    Mth.floor(this.platypus.getX() + (double)1.0F),
+                    Mth.floor(this.platypus.getY() + (double)8.0F),
+                    Mth.floor(this.platypus.getZ() + (double)1.0F)
             );
             BlockPos blockPos = null;
 
             for(BlockPos blockPos2 : iterable) {
-                if (this.givesAir(this.mob.level(), blockPos2)) {
+                if (this.givesAir(this.platypus.level(), blockPos2)) {
                     blockPos = blockPos2;
                     break;
                 }
             }
 
             if (blockPos == null) {
-                blockPos = BlockPos.containing(this.mob.getX(), this.mob.getY() + (double)8.0F, this.mob.getZ());
+                blockPos = BlockPos.containing(this.platypus.getX(), this.platypus.getY() + (double)8.0F, this.platypus.getZ());
             }
 
-            this.mob.getNavigation().moveTo(
+            this.platypus.getNavigation().moveTo(
                     (double)blockPos.getX(),
                     (double)(blockPos.getY() + 1),
                     (double)blockPos.getZ(),
@@ -349,8 +352,8 @@ public static boolean checkPlatypusSpawnRules(EntityType<? extends LivingEntity>
 
         public void tick() {
             this.findAirPosition();
-            this.mob.moveRelative(0.02F, new Vec3((double)this.mob.xxa, (double)this.mob.yya, (double)this.mob.zza));
-            this.mob.move(MoverType.SELF, this.mob.getDeltaMovement());
+            this.platypus.moveRelative(0.02F, new Vec3((double)this.platypus.xxa, (double)this.platypus.yya, (double)this.platypus.zza));
+            this.platypus.move(MoverType.SELF, this.platypus.getDeltaMovement());
         }
 
         private boolean givesAir(LevelReader levelReader, BlockPos blockPos) {

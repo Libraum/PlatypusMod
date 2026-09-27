@@ -3,7 +3,7 @@ package net.libraum.platypodes.world.gen;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.libraum.platypodes.entity.ModEntities;
-import net.libraum.platypodes.entity.custom.PlatypusEntity;
+import net.libraum.platypodes.entity.custom.Platypus;
 import net.libraum.platypodes.util.ModConfig;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.entity.SpawnPlacements;
@@ -16,6 +16,6 @@ public class ModEntityGeneration {
                 ModEntities.PLATYPUS, ModConfig.spawnWeight, ModConfig.minSpawnGroup, ModConfig.maxSpawnGroup); /* Defaults: 1, 1, 1 */
 
         SpawnPlacements.register(ModEntities.PLATYPUS, SpawnPlacements.Type.IN_WATER,
-                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, PlatypusEntity::checkPlatypusSpawnRules);
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Platypus::checkPlatypusSpawnRules);
     }
 }

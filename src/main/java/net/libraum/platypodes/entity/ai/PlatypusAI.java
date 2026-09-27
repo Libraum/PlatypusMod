@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import net.libraum.platypodes.entity.ModEntities;
-import net.libraum.platypodes.entity.custom.PlatypusEntity;
+import net.libraum.platypodes.entity.custom.Platypus;
 import net.libraum.platypodes.items.ModItems;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -40,7 +40,7 @@ public class PlatypusAI {
     private static final float WATER_SPEED = 0.5F;
     private static final float FOLLOW_WATER_SPEED = 0.6F;
 
-    public static Brain<?> create(Brain<PlatypusEntity> brain) {
+    public static Brain<?> create(Brain<Platypus> brain) {
         addCoreActivities(brain);
         addIdleActivities(brain);
         brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
@@ -49,11 +49,12 @@ public class PlatypusAI {
         return brain;
     }
 
-    private static void addCoreActivities(@UnknownNullability Brain<PlatypusEntity> brain) {
+    private static void addCoreActivities(@UnknownNullability Brain<Platypus> brain) {
         brain.addActivity(
                 Activity.CORE,
                 0,
                 ImmutableList.of(
+                        new AnimalPanic(WATER_SPEED),
                         new LookAtTargetSink(45, 90),
                         new MoveToTargetSink(),
                         new CountDownCooldownTicks(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS)
@@ -61,7 +62,7 @@ public class PlatypusAI {
         );
     }
 
-    private static void addIdleActivities(@UnknownNullability Brain<PlatypusEntity> brain) {
+    private static void addIdleActivities(@UnknownNullability Brain<Platypus> brain) {
         brain.addActivity(
                 Activity.IDLE,
                 ImmutableList.of(
@@ -108,7 +109,7 @@ public class PlatypusAI {
         }
     }
 
-    public static void updateActivities(PlatypusEntity platypus) {
+    public static void updateActivities(Platypus platypus) {
         Brain<Axolotl> brain = platypus.getBrain();
         brain.setActiveActivityToFirstValid(ImmutableList.of(Activity.IDLE));
     }

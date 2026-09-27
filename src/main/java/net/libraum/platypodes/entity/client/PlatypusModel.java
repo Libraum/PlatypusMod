@@ -5,8 +5,7 @@
 package net.libraum.platypodes.entity.client;
 
 import com.google.common.collect.ImmutableList;
-import net.libraum.platypodes.entity.custom.PlatypusEntity;
-import net.minecraft.client.model.*;
+import net.libraum.platypodes.entity.custom.Platypus;
 import net.minecraft.client.model.AgeableListModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartNames;
@@ -18,7 +17,7 @@ import org.joml.Vector3f;
 
 import java.util.Map;
 
-public class PlatypusEntityModel<T extends PlatypusEntity & LerpingModel> extends AgeableListModel<T> {
+public class PlatypusModel<T extends Platypus & LerpingModel> extends AgeableListModel<T> {
 	public static final float MOVING_IN_WATER_LEG_PITCH = 1.8849558F;
 	private final ModelPart head;
 	private final ModelPart topGills;
@@ -31,7 +30,7 @@ public class PlatypusEntityModel<T extends PlatypusEntity & LerpingModel> extend
 	private final ModelPart rightHindLeg;
 	private final ModelPart tail;
 
-	public PlatypusEntityModel(ModelPart root) {
+	public PlatypusModel(ModelPart root) {
 		super(true, 8.0f, 3.35f);
 		this.body = root.getChild(PartNames.BODY);
 		this.head = this.body.getChild(PartNames.HEAD);

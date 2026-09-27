@@ -9,6 +9,7 @@ public class ModConfig extends MidnightConfig {
 //    @Entry public static double speedMultiplier = 1.0;
 //    @Entry public static double attackMultiplier = 2.0;
     @Entry public static int maxAirSupply = 6000;
+    @Entry public static int maxPoisonSupply = 6000;
 //    @Comment(centered = true) public static Comment attributesRestart;
 
     /** Platypus Spawning */
