@@ -29,6 +29,7 @@
 	"mixins": [
 		"platypodes.mixins.json"
 	],
+	"accessWidener": "platypodes.classtweaker",
 	"depends": {
 		"fabricloader": ">=0.19.3",
 		"minecraft": "~1.20.1",

@@ -1,5 +1,6 @@
 {
   "entity.platypodes.platypus": "Platypus",
+  "entity.platypodes.platypus.description": "A passive mob found in rivers at twilight. Use a bucket to pick them up, a bottle to harvest venom and feed them yabbies to breed.",
 
   "item.platypodes.platypus_spawn_egg": "Platypus Spawn Egg",
   "item.platypodes.platypus_bucket": "Bucket of Platypus",

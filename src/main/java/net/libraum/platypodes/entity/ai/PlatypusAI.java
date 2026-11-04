@@ -23,7 +23,6 @@ import net.minecraft.world.entity.ai.behavior.TryFindWater;
 import net.minecraft.world.entity.ai.behavior.declarative.BehaviorBuilder;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
-import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.schedule.Activity;
@@ -110,7 +109,7 @@ public class PlatypusAI {
     }
 
     public static void updateActivities(Platypus platypus) {
-        Brain<Axolotl> brain = platypus.getBrain();
+        Brain<Platypus> brain = platypus.getBrain();
         brain.setActiveActivityToFirstValid(ImmutableList.of(Activity.IDLE));
     }
 
