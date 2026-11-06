@@ -12,7 +12,7 @@ import net.minecraft.world.level.biome.Biomes;
 
 public class ModEntityGeneration {
     public static void addSpawns() {
-        BiomeModifications.addSpawn(BiomeSelectors.includeByKey(Biomes.RIVER), MobCategory.PLATYPODES_PLATYPUS,
+        BiomeModifications.addSpawn(BiomeSelectors.includeByKey(Biomes.RIVER), MobCategory.AXOLOTLS,
                 ModEntities.PLATYPUS, ModConfig.spawnWeight, ModConfig.minSpawnGroup, ModConfig.maxSpawnGroup); /* Defaults: 1, 1, 1 */
 
         SpawnPlacements.register(ModEntities.PLATYPUS, SpawnPlacements.Type.IN_WATER,

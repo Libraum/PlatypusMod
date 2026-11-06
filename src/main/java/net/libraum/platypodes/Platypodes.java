@@ -1,6 +1,5 @@
 package net.libraum.platypodes;
 
-import eu.midnightdust.lib.config.MidnightConfig;
 import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
@@ -10,7 +9,7 @@ import net.libraum.platypodes.items.ModItemGroups;
 import net.libraum.platypodes.items.ModItems;
 import net.libraum.platypodes.sound.ModSounds;
 import net.libraum.platypodes.util.ModConfig;
-import net.libraum.platypodes.util.ModCustomTrades;
+import net.libraum.platypodes.util.ModTrades;
 import net.libraum.platypodes.util.ModLootTableModifiers;
 import net.libraum.platypodes.world.gen.ModWorldGeneration;
 import org.slf4j.Logger;
@@ -22,18 +21,18 @@ public class Platypodes implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		ModConfig.registerModConfig();
+
 		ModItemGroups.registerItemGroups();
 		ModItems.registerModItems();
 		ModEntities.registerModEntities();
 		ModWorldGeneration.generateModWorldGen();
 
-		ModCustomTrades.registerCustomTrades();
+		ModTrades.registerModTrades();
 		ModLootTableModifiers.modifyLootTables();
 
 		ModSounds.registerSounds();
 
 		FabricDefaultAttributeRegistry.register(ModEntities.PLATYPUS, Platypus.createPlatypusAttributes());
-
-		MidnightConfig.init(MOD_ID, ModConfig.class);
 	}
 }

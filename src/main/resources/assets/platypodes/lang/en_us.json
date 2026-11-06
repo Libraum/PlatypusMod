@@ -1,6 +1,6 @@
 {
   "entity.platypodes.platypus": "Platypus",
-  "entity.platypodes.platypus.description": "A passive mob found in rivers at twilight. Use a bucket to pick them up, a bottle to harvest venom and feed them yabbies to breed.",
+  "entity.platypodes.platypus.description": "A passive mob found in rivers during twilight. Pick up in a bucket and extract venom with a bottle. Fond of Yabbies.",
 
   "item.platypodes.platypus_spawn_egg": "Platypus Spawn Egg",
   "item.platypodes.platypus_bucket": "Bucket of Platypus",
@@ -20,9 +20,9 @@
 
   "platypodes.midnightconfig.title": "Platypodes Config",
 
+  "platypodes.midnightconfig.attributes": "Platypus Attributes:",
   "platypodes.midnightconfig.maxAirSupply": "Max Air Supply",
-  "platypodes.midnightconfig.maxPoisonSupply": "Max Poison Supply",
-  "platypodes.midnightconfig.attributesRestart": "*Some changes to Attributes may require a restart of the game and/or server before taking affect.",
+  "platypodes.midnightconfig.maxPoisonSupply": "Poison Cooldown",
 
   "platypodes.midnightconfig.spawning": "Platypus Spawning:",
   "platypodes.midnightconfig.enableSpawns": "Enable Spawning",
