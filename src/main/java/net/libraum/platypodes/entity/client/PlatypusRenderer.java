@@ -7,7 +7,7 @@ import net.minecraft.client.renderer.entity.MobRenderer;
 import net.minecraft.resources.ResourceLocation;
 
 public class PlatypusRenderer extends MobRenderer<Platypus, PlatypusModel<Platypus>> {
-    private static final ResourceLocation BROWN_TEXTURE = new ResourceLocation(Platypodes.MOD_ID, "textures/entity/platypus/platypus_brown.png");
+    private static final ResourceLocation BROWN_TEXTURE = new ResourceLocation(Platypodes.MOD_ID, "textures/entity/platypus/platypus.png");
     private static final ResourceLocation DARK_TEXTURE = new ResourceLocation(Platypodes.MOD_ID, "textures/entity/platypus/platypus_dark.png");
     private static final ResourceLocation GOLD_TEXTURE = new ResourceLocation(Platypodes.MOD_ID, "textures/entity/platypus/platypus_gold.png");
     private static final ResourceLocation BLUE_TEXTURE = new ResourceLocation(Platypodes.MOD_ID, "textures/entity/platypus/platypus_blue.png");

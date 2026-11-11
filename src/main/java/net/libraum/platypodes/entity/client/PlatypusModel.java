@@ -203,7 +203,7 @@ public class PlatypusModel<T extends Platypus & LerpingModel> extends AgeableLis
 		float g = Mth.cos(f);
 		float h = Mth.sin(f);
 		float i = h * 0.15F;
-		this.body.xRot = this.lerpAngleDegrees(this.body.xRot, 0.15F + 0.075F * g);
+		this.body.xRot = this.lerpAngleDegrees(this.body.xRot, -0.15F - 0.075F * g);
 		this.head.yRot = this.lerpAngleDegrees(this.head.yRot, 0.0F);
 		this.head.zRot = this.lerpAngleDegrees(this.head.zRot, 0.0F);
 		this.body.y -= i;
@@ -212,7 +212,7 @@ public class PlatypusModel<T extends Platypus & LerpingModel> extends AgeableLis
 		this.setAngles(this.leftFrontLeg, 0.3F, 0.6F * g, 0.5F - h * 0.5F);
 		this.copyHindLegAngles();
 		this.setAngles(this.rightFrontLeg, 0.3F, 0.6F * g, -0.5F - h * 0.5F);
-		this.tail.xRot = this.lerpAngleDegrees(this.tail.xRot, 0.2F);
+		this.tail.xRot = this.lerpAngleDegrees(this.tail.xRot, -0.2F);
 		this.tail.yRot = this.lerpAngleDegrees(this.tail.yRot, 0.5F * g);
 	}
 
