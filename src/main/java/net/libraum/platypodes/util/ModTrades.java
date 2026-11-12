@@ -17,26 +17,33 @@ public class ModTrades {
     }
 
     public static void onVillagerTrades() {
-        TradeOfferHelper.registerVillagerOffers(VillagerProfession.FISHERMAN, 1, factories -> {
-            if (ModConfig.fisherTrades) {
+        if (ModConfig.fisherTrades) {
+            TradeOfferHelper.registerVillagerOffers(VillagerProfession.FISHERMAN, 1, factories -> {
                 factories.add((entity, random) -> new MerchantOffer(
                         new ItemStack(Items.EMERALD, 2),
                         new ItemStack(ModItems.YABBY, 3),
                         6, 2, 0.05f
                 ));
-            }
-        });
+            });
+            TradeOfferHelper.registerVillagerOffers(VillagerProfession.FISHERMAN, 2, factories -> {
+                factories.add((entity, random) ->new MerchantOffer(
+                        new ItemStack(ModItems.YABBY, 14),
+                        new ItemStack(Items.EMERALD, 1),
+                        16, 5, 0.05f
+                ));
+            });
+        }
     }
 
     public static void onWandererTrades() {
-        TradeOfferHelper.registerWanderingTraderOffers(1, factories -> {
-            if (ModConfig.wanderingTrades) {
+        if (ModConfig.wanderingTrades) {
+            TradeOfferHelper.registerWanderingTraderOffers(1, factories -> {
                 factories.add((entity, random) -> new MerchantOffer(
                         new ItemStack(Items.EMERALD, 3),
                         new ItemStack(ModItems.YABBY, 6),
                         8, 3, 0.2f
                 ));
-            }
-        });
+            });
+        }
     }
 }
