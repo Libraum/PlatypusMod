@@ -21,6 +21,7 @@
   "platypodes.midnightconfig.title": "Platypodes Config",
 
   "platypodes.midnightconfig.attributes": "Platypus Attributes:",
+  "platypodes.midnightconfig.maxHealth": "Max Health*",
   "platypodes.midnightconfig.maxAirSupply": "Max Air Supply",
   "platypodes.midnightconfig.maxPoisonSupply": "Poison Cooldown",
 
@@ -37,8 +38,9 @@
 
   "platypodes.midnightconfig.yabbySources": "Yabby Item Sources:",
   "platypodes.midnightconfig.seagrassDrops": "Seagrass Drop Chance",
-  "platypodes.midnightconfig.fisherChests": "Village Fisher Chests",
-  "platypodes.midnightconfig.fisherTrades": "Fisher Villager Trades",
-  "platypodes.midnightconfig.wanderingTrades": "Wandering Trader Trades",
-  "platypodes.midnightconfig.lootPoolRestart": "*Any changes to Loot Pools require a restart of the game and/or server before taking affect."
+  "platypodes.midnightconfig.fisherChests": "Village Fisher Chests*",
+  "platypodes.midnightconfig.fisherTrades": "Fisher Villager Trades*",
+  "platypodes.midnightconfig.wanderingTrades": "Wandering Trader Trades*",
+
+  "platypodes.midnightconfig.requiresRestart": "*Options which require a restart of the game and/or server before taking affect."
 }

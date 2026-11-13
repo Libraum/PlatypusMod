@@ -138,7 +138,7 @@ public class Platypus extends Animal implements LerpingModel, VariantHolder<Plat
 
     public static AttributeSupplier.Builder createPlatypusAttributes() {
         return Mob.createMobAttributes()
-                .add(Attributes.MAX_HEALTH, 14.0)
+                .add(Attributes.MAX_HEALTH, ModConfig.maxHealth) /* Default: 14.0 */
                 .add(Attributes.MOVEMENT_SPEED, 1.0)
                 .add(Attributes.ATTACK_DAMAGE, 2.0);
     }

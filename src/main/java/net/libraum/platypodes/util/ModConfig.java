@@ -12,6 +12,7 @@ public class ModConfig extends MidnightConfig {
 
     /** Platypus Attributes */
     @Comment(centered = true) public static Comment attributes;
+    @Entry(min=1.0) public static double maxHealth = 14.0;
     @Entry public static int maxAirSupply = 6000;
     @Entry public static int maxPoisonSupply = 6000;
 
@@ -35,5 +36,6 @@ public class ModConfig extends MidnightConfig {
     @Entry public static boolean fisherChests = true;
     @Entry public static boolean fisherTrades = true;
     @Entry public static boolean wanderingTrades = true;
-    @Comment(centered = true) public static Comment lootPoolRestart;
+
+    @Comment(centered = true) public static Comment requiresRestart;
 }
