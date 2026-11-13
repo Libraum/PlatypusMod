@@ -5,10 +5,11 @@
 package net.libraum.platypodes.entity.client;
 
 import com.google.common.collect.ImmutableList;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.libraum.platypodes.entity.custom.Platypus;
 import net.minecraft.client.model.AgeableListModel;
 import net.minecraft.client.model.geom.ModelPart;
-import net.minecraft.client.model.geom.PartNames;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.world.entity.LerpingModel;
@@ -17,8 +18,8 @@ import org.joml.Vector3f;
 
 import java.util.Map;
 
+@Environment(EnvType.CLIENT)
 public class PlatypusModel<T extends Platypus & LerpingModel> extends AgeableListModel<T> {
-	public static final float MOVING_IN_WATER_LEG_PITCH = 1.8849558F;
 	private final ModelPart head;
 	private final ModelPart body;
 	private final ModelPart leftFrontLeg;
@@ -29,26 +30,26 @@ public class PlatypusModel<T extends Platypus & LerpingModel> extends AgeableLis
 
 	public PlatypusModel(ModelPart root) {
 		super(true, 8.0f, 3.35f);
-		this.body = root.getChild(PartNames.BODY);
-		this.head = this.body.getChild(PartNames.HEAD);
-		this.rightHindLeg = this.body.getChild(PartNames.RIGHT_HIND_LEG);
-		this.leftHindLeg = this.body.getChild(PartNames.LEFT_HIND_LEG);
-		this.rightFrontLeg = this.body.getChild(PartNames.RIGHT_FRONT_LEG);
-		this.leftFrontLeg = this.body.getChild(PartNames.LEFT_FRONT_LEG);
-		this.tail = this.body.getChild(PartNames.TAIL);
+		this.body = root.getChild("body");
+		this.head = this.body.getChild("head");
+		this.rightHindLeg = this.body.getChild("right_hind_leg");
+		this.leftHindLeg = this.body.getChild("left_hind_leg");
+		this.rightFrontLeg = this.body.getChild("right_front_leg");
+		this.leftFrontLeg = this.body.getChild("left_front_leg");
+		this.tail = this.body.getChild("tail");
 	}
 	public static LayerDefinition getTexturedModelData() {
 		MeshDefinition modelData = new MeshDefinition();
 		PartDefinition modelPartData = modelData.getRoot();
 		PartDefinition modelPartData2 = modelPartData.addOrReplaceChild(
-				PartNames.BODY,
+				"body",
 				CubeListBuilder.create()
 						.texOffs(0, 10).addBox(-4.0F, -4.0F, -9.0F, 8.0F, 6.0F, 10.0F),
 				PartPose.offset(0.0F, 18.0F, 4.0F)
 		);
 		CubeDeformation dilation = new CubeDeformation(0F);
 		modelPartData2.addOrReplaceChild(
-				PartNames.HEAD,
+				"head",
 				CubeListBuilder.create()
 						.texOffs(0, 0).addBox(-4.0F, -3.0F, -5.0F, 8.0F, 5.0F, 5.0F, dilation)
 						.texOffs(26, 1).addBox(-3.5F, -0.3F, -9.0F, 7.0F, 2.0F, 4.0F, dilation),
@@ -61,13 +62,14 @@ public class PlatypusModel<T extends Platypus & LerpingModel> extends AgeableLis
 		CubeListBuilder modelPartBuilder5 = CubeListBuilder.create()
 				.texOffs(1, 10).mirror().addBox(-2.0F, -1.0F, -1.0F, 2.0F, 2.0F, 2.0F, dilation)
 				.texOffs(-4, 14).mirror().addBox(-4.5F, 0.5F, -2.0F, 3.0F, 0.0F, 4.0F, dilation);
-		modelPartData2.addOrReplaceChild(PartNames.LEFT_FRONT_LEG, modelPartBuilder4, PartPose.offset(4.0F, 1.0F, -8.5F)); //+1, -1.5, -0.5
-		modelPartData2.addOrReplaceChild(PartNames.LEFT_HIND_LEG, modelPartBuilder4, PartPose.offset(4.0F, 1.0F, -0.5F)); //+1, -1.5, +0.5
-		modelPartData2.addOrReplaceChild(PartNames.RIGHT_FRONT_LEG, modelPartBuilder5, PartPose.offset(-4.0F, 1.0F, -8.5F)); //-1, -1.5, -0.5
-		modelPartData2.addOrReplaceChild(PartNames.RIGHT_HIND_LEG, modelPartBuilder5, PartPose.offset(-4.0F, 1.0F, -0.5F)); //-1, -1.5, +0.5
+		modelPartData2.addOrReplaceChild("left_front_leg", modelPartBuilder4, PartPose.offset(4.0F, 1.0F, -8.5F));
+		modelPartData2.addOrReplaceChild("left_hind_leg", modelPartBuilder4, PartPose.offset(4.0F, 1.0F, -0.5F));
+		modelPartData2.addOrReplaceChild("right_front_leg", modelPartBuilder5, PartPose.offset(-4.0F, 1.0F, -8.5F));
+		modelPartData2.addOrReplaceChild("right_hind_leg", modelPartBuilder5, PartPose.offset(-4.0F, 1.0F, -0.5F));
 
 		modelPartData2.addOrReplaceChild(
-				PartNames.TAIL, CubeListBuilder.create().texOffs(26, 9).addBox(-3.5F, -2.0F, 0.0F, 7.0F, 3.0F, 8.0F),
+				"tail",
+				CubeListBuilder.create().texOffs(26, 9).addBox(-3.5F, -2.0F, 0.0F, 7.0F, 3.0F, 8.0F),
 				PartPose.offset(0.0F, 0.0F, 1.0F)
 		);
 		return LayerDefinition.create(modelData, 64, 64);
@@ -88,7 +90,7 @@ public class PlatypusModel<T extends Platypus & LerpingModel> extends AgeableLis
 		boolean bl = g > 1.0E-5F || platypus.getXRot() != platypus.xRotO || platypus.getYRot() != platypus.yRotO;
 		if (platypus.isInWaterOrBubble()) {
 			if (bl) {
-				this.setMovingInWaterAngles(h, j);
+				this.setMovingInWaterAngles(h, i, j);
 			} else {
 				this.setStandingInWaterAngles(h);
 			}
@@ -139,13 +141,13 @@ public class PlatypusModel<T extends Platypus & LerpingModel> extends AgeableLis
 			this.rightFrontLeg.setRotation(0.0F, 0.0F, 0.0F);
 			this.tail.setRotation(0.0F, 0.0F, 0.0F);
 		} else {
-			this.setAngles(this.body, (Vector3f)map.get("body"));
-			this.setAngles(this.head, (Vector3f)map.get("head"));
-			this.setAngles(this.leftHindLeg, (Vector3f)map.get("left_hind_leg"));
-			this.setAngles(this.rightHindLeg, (Vector3f)map.get("right_hind_leg"));
-			this.setAngles(this.leftFrontLeg, (Vector3f)map.get("left_front_leg"));
-			this.setAngles(this.rightFrontLeg, (Vector3f)map.get("right_front_leg"));
-			this.setAngles(this.tail, (Vector3f)map.get("tail"));
+			this.setAngles(this.body, map.get("body"));
+			this.setAngles(this.head, map.get("head"));
+			this.setAngles(this.leftHindLeg, map.get("left_hind_leg"));
+			this.setAngles(this.rightHindLeg, map.get("right_hind_leg"));
+			this.setAngles(this.leftFrontLeg, map.get("left_front_leg"));
+			this.setAngles(this.rightFrontLeg, map.get("right_front_leg"));
+			this.setAngles(this.tail, map.get("tail"));
 		}
 	}
 
@@ -165,17 +167,18 @@ public class PlatypusModel<T extends Platypus & LerpingModel> extends AgeableLis
 		float f = animationProgress * 0.09F;
 		float g = Mth.sin(f);
 		float h = g * g - 2.0F * g;
+		float i = h * 0.015F;
 		this.body.xRot = this.lerpAngleDegrees(0.2F, this.body.xRot, 0.0F);
 		this.body.yRot = this.lerpAngleDegrees(this.body.yRot, headYaw * (float) (Math.PI / 180.0));
-		this.body.zRot = this.lerpAngleDegrees(this.body.zRot, 0.0F);
-		this.head.xRot = this.lerpAngleDegrees(this.head.xRot, -0.09F * h);
+		this.body.zRot = this.lerpAngleDegrees(this.body.zRot, i);
+		this.head.xRot = this.lerpAngleDegrees(this.head.xRot, 0.0F);
 		this.head.yRot = this.lerpAngleDegrees(this.head.yRot, 0.0F);
-		this.head.zRot = this.lerpAngleDegrees(this.head.zRot, -0.2F);
-		this.setAngles(this.leftHindLeg, 0.0F, -0.5F, 0.3F);
-		this.setAngles(this.leftFrontLeg, 0.0F, 0.5F, 0.3F);
-		this.copyHindLegAngles();
-		this.copyFrontLegAngles();
-		this.tail.xRot = this.lerpAngleDegrees(this.tail.xRot, 0.0F);
+		this.head.zRot = this.lerpAngleDegrees(this.head.zRot, -i);
+		this.setAngles(this.leftHindLeg, 0.0F, -0.5F, 0.3F - i);
+		this.setAngles(this.leftFrontLeg, 0.0F, 0.5F, 0.3F - i);
+		this.setAngles(this.rightHindLeg, 0.0F, 0.5F, -0.3F - i);
+		this.setAngles(this.rightFrontLeg, 0.0F, -0.5F, -0.3F - i);
+		this.tail.xRot = this.lerpAngleDegrees(this.tail.xRot, -0.2F);
 		this.tail.yRot = this.lerpAngleDegrees(this.tail.yRot, -0.1F + 0.1F * h);
 	}
 
@@ -184,18 +187,19 @@ public class PlatypusModel<T extends Platypus & LerpingModel> extends AgeableLis
 		float g = Mth.cos(f);
 		float h = (g * g - 2.0F * g) / 5.0F;
 		float i = 0.7F * g;
+		float j = Mth.cos(f-1.5F) * 0.25F;
 		this.body.xRot = this.lerpAngleDegrees(0.2F, this.body.xRot, 0.0F);
-		this.body.yRot = this.lerpAngleDegrees(this.body.yRot, headYaw * (float) (Math.PI / 180.0));
-		this.body.zRot = this.lerpAngleDegrees(this.body.zRot, 0.0F);
+		this.body.yRot = this.lerpAngleDegrees(this.body.yRot, 0.09F * -g);
+		this.body.zRot = this.lerpAngleDegrees(this.body.zRot, 0.09F * -j);
 		this.head.xRot = this.lerpAngleDegrees(this.head.xRot, 0.0F);
 		this.head.yRot = this.lerpAngleDegrees(this.head.yRot, 0.09F * g);
 		this.head.zRot = this.lerpAngleDegrees(this.head.zRot, 0.0F);
-		this.setAngles(this.leftHindLeg, 0F, -0.3F - h, 0.3F);
-		this.setAngles(this.leftFrontLeg, 0.0F, (float) (Math.PI / 8) - i, 0.3F);
-		this.setAngles(this.rightHindLeg, this.leftHindLeg.xRot, 0.3F - h, -0.3F);
-		this.setAngles(this.rightFrontLeg, this.leftFrontLeg.xRot, (float) (-Math.PI / 8) - i, -0.3F);
-		this.tail.xRot = this.lerpAngleDegrees(this.tail.xRot, 0.0F);
-		this.tail.yRot = this.lerpAngleDegrees(this.tail.yRot, this.head.yRot);
+		this.setAngles(this.leftHindLeg, 0F, -0.3F + i, j + 0.15F);
+		this.setAngles(this.leftFrontLeg, 0.0F, (float) (Math.PI / 8) - i, -j + 0.05F);
+		this.setAngles(this.rightHindLeg, this.leftHindLeg.xRot, 0.3F + i, j - 0.15F);
+		this.setAngles(this.rightFrontLeg, this.leftFrontLeg.xRot, (float) (-Math.PI / 8) - i, -j - 0.05F);
+		this.tail.xRot = this.lerpAngleDegrees(this.tail.xRot, -0.2F);
+		this.tail.yRot = this.lerpAngleDegrees(this.tail.yRot, this.body.yRot * 4);
 	}
 
 	private void setStandingInWaterAngles(float animationProgress) {
@@ -209,19 +213,20 @@ public class PlatypusModel<T extends Platypus & LerpingModel> extends AgeableLis
 		this.body.y -= i;
 		this.head.xRot = this.lerpAngleDegrees(this.head.xRot, -this.body.xRot);
 		this.setAngles(this.leftHindLeg, 0.0F, -1.0F, 0.75F - g * 0.11F);
-		this.setAngles(this.leftFrontLeg, 0.3F, 0.6F * g, 0.5F - h * 0.5F);
+		this.setAngles(this.leftFrontLeg, 0.3F, 0.6F * -g, 0.5F - h * 0.5F);
 		this.copyHindLegAngles();
-		this.setAngles(this.rightFrontLeg, 0.3F, 0.6F * g, -0.5F - h * 0.5F);
+		this.setAngles(this.rightFrontLeg, 0.3F, 0.6F * -g, -0.5F - h * 0.5F);
 		this.tail.xRot = this.lerpAngleDegrees(this.tail.xRot, -0.2F);
 		this.tail.yRot = this.lerpAngleDegrees(this.tail.yRot, 0.5F * g);
 	}
 
-	private void setMovingInWaterAngles(float animationProgress, float headPitch) {
+	private void setMovingInWaterAngles(float animationProgress, float headYaw, float headPitch) {
 		float f = animationProgress * 0.33F;
 		float g = Mth.sin(f);
 		float h = Mth.cos(f);
 		float i = 0.13F * g;
 		this.body.xRot = this.lerpAngleDegrees(0.1F, this.body.xRot, headPitch * (float) (Math.PI / 180.0) + i);
+		this.body.zRot = this.lerpAngleDegrees(0.1F, this.body.zRot, (float) (Math.PI / 180.0));
 		this.head.xRot = -i * 1.8F;
 		this.head.yRot = this.lerpAngleDegrees(this.head.yRot, 0.0F);
 		this.head.zRot = this.lerpAngleDegrees(this.head.zRot, 0.0F);
