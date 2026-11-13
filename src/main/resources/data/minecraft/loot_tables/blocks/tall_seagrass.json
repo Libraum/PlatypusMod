@@ -60,6 +60,12 @@
                 {
                   "chance": 0.05,
                   "condition": "minecraft:random_chance"
+                },
+                {
+                  "condition": "minecraft:location_check",
+                  "predicate": {
+                    "biome": "minecraft:river"
+                  }
                 }
               ],
               "name": "platypodes:yabby"
@@ -128,6 +134,12 @@
                 {
                   "chance": 0.05,
                   "condition": "minecraft:random_chance"
+                },
+                {
+                  "condition": "minecraft:location_check",
+                  "predicate": {
+                    "biome": "minecraft:river"
+                  }
                 }
               ],
               "name": "platypodes:yabby"
