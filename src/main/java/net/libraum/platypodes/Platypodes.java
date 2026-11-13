@@ -11,7 +11,7 @@ import net.libraum.platypodes.sound.ModSounds;
 import net.libraum.platypodes.util.ModConfig;
 import net.libraum.platypodes.util.ModTrades;
 import net.libraum.platypodes.util.ModLootTableModifiers;
-import net.libraum.platypodes.world.gen.ModWorldGeneration;
+import net.libraum.platypodes.world.gen.ModEntityGeneration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +26,7 @@ public class Platypodes implements ModInitializer {
 		ModItemGroups.registerItemGroups();
 		ModItems.registerModItems();
 		ModEntities.registerModEntities();
-		ModWorldGeneration.generateModWorldGen();
+		ModEntityGeneration.registerModSpawns();
 
 		ModTrades.registerModTrades();
 		ModLootTableModifiers.modifyLootTables();
