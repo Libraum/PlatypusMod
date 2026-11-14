@@ -26,7 +26,7 @@ public class ModConfig extends MidnightConfig {
         ALLDAY
     }
     @Entry(min = 1) public static int rareVariantChance = 1200;
-    @Entry(min = 1) public static int spawnWeight = 1;
+    @Entry(min = 1) public static int spawnWeight = 2;
     @Entry(min = 0) public static int minSpawnGroup = 1;
     @Entry(min = 1) public static int maxSpawnGroup = 1;
 

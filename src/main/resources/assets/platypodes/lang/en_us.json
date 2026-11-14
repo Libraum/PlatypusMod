@@ -32,9 +32,9 @@
   "platypodes.midnightconfig.enum.SpawnDuring.NIGHT": "Night",
   "platypodes.midnightconfig.enum.SpawnDuring.ALLDAY": "All Day",
   "platypodes.midnightconfig.rareVariantChance": "Rare Variant Chance",
-  "platypodes.midnightconfig.spawnWeight": "Spawn Weight",
-  "platypodes.midnightconfig.minSpawnGroup": "Minimum Group Size",
-  "platypodes.midnightconfig.maxSpawnGroup": "Maximum Group Size",
+  "platypodes.midnightconfig.spawnWeight": "Spawn Weight*",
+  "platypodes.midnightconfig.minSpawnGroup": "Minimum Group Size*",
+  "platypodes.midnightconfig.maxSpawnGroup": "Maximum Group Size*",
 
   "platypodes.midnightconfig.yabbySources": "Yabby Item Sources:",
   "platypodes.midnightconfig.seagrassDrops": "Seagrass Drop Chance",
