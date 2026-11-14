@@ -13,11 +13,21 @@ import net.minecraft.world.level.biome.Biomes;
 
 public class ModEntityGeneration {
     public static void registerModSpawns() {
-        BiomeModifications.addSpawn(BiomeSelectors.includeByKey(Biomes.RIVER), MobCategory.AXOLOTLS,
-                ModEntities.PLATYPUS, ModConfig.spawnWeight, ModConfig.minSpawnGroup, ModConfig.maxSpawnGroup); /* Defaults: 1, 1, 1 */
+        BiomeModifications.addSpawn(
+                BiomeSelectors.includeByKey(Biomes.RIVER),
+                MobCategory.WATER_CREATURE,
+                ModEntities.PLATYPUS,
+                ModConfig.spawnWeight, /* Default: 1 */
+                ModConfig.minSpawnGroup, /* Default: 1 */
+                ModConfig.maxSpawnGroup /* Default: 1 */
+        );
 
-        SpawnPlacements.register(ModEntities.PLATYPUS, SpawnPlacements.Type.IN_WATER,
-                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Platypus::checkPlatypusSpawnRules);
+        SpawnPlacements.register(
+                ModEntities.PLATYPUS,
+                SpawnPlacements.Type.IN_WATER,
+                Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                Platypus::checkPlatypusSpawnRules
+        );
 
         Platypodes.LOGGER.info("Registering Spawns for " + Platypodes.MOD_ID);
     }
