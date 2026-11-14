@@ -53,7 +53,7 @@ processResources {
 }
 
 loom {
-	accessWidenerPath = file("src/main/resources/platypodes.classtweaker")
+
 }
 
 tasks.withType(JavaCompile).configureEach {

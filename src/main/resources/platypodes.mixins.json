@@ -1,11 +1,10 @@
 {
-	"required": true,
+	"required": false,
 	"package": "net.libraum.platypodes.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
-		"MobCategoryMixin"
 	],
 	"injectors": {
-		"defaultRequire": 1
+		"defaultRequire": 0
 	}
 }
