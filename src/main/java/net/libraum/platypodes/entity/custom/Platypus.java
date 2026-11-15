@@ -100,9 +100,6 @@ public class Platypus extends Animal implements LerpingModel, VariantHolder<Plat
     private static final EntityDataAccessor<Integer> DATA_VARIANT = SynchedEntityData.defineId(Platypus.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> DATA_POISON_SUPPLY = SynchedEntityData.defineId(Platypus.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> FROM_BUCKET = SynchedEntityData.defineId(Platypus.class, EntityDataSerializers.BOOLEAN);
-    public static final double RARE_VARIANT_CHANCE = 1200;
-    private static final int PLATYPUS_TOTAL_AIR_SUPPLY = 6000;
-    public static final String VARIANT_TAG = "Variant";
     private final Map<String, Vector3f> modelRotationValues = Maps.newHashMap();
 
     @Override
@@ -320,7 +317,7 @@ public class Platypus extends Animal implements LerpingModel, VariantHolder<Plat
     @Override
     public int getMaxAirSupply() {
         return ModConfig.maxAirSupply;
-    } /* Default: 6000 */
+    } /* Default: 1200 */
 
     @Override
     public boolean canBreatheUnderwater() {

@@ -13,7 +13,7 @@ public class ModConfig extends MidnightConfig {
     /** Platypus Attributes */
     @Comment(centered = true) public static Comment attributes;
     @Entry(min=1.0) public static double maxHealth = 14.0;
-    @Entry public static int maxAirSupply = 6000;
+    @Entry public static int maxAirSupply = 1200;
     @Entry public static int maxPoisonSupply = 6000;
 
     /** Platypus Spawning */
@@ -26,7 +26,7 @@ public class ModConfig extends MidnightConfig {
         ALLDAY
     }
     @Entry(min = 1) public static int rareVariantChance = 1200;
-    @Entry(min = 1) public static int spawnWeight = 2;
+    @Entry(min = 1) public static int spawnWeight = 3;
     @Entry(min = 0) public static int minSpawnGroup = 1;
     @Entry(min = 1) public static int maxSpawnGroup = 1;
 

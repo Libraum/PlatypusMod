@@ -17,7 +17,7 @@ public class ModEntityGeneration {
                 BiomeSelectors.includeByKey(Biomes.RIVER),
                 MobCategory.WATER_CREATURE,
                 ModEntities.PLATYPUS,
-                ModConfig.spawnWeight, /* Default: 2 */
+                ModConfig.spawnWeight, /* Default: 3 */
                 ModConfig.minSpawnGroup, /* Default: 1 */
                 ModConfig.maxSpawnGroup /* Default: 1 */
         );
