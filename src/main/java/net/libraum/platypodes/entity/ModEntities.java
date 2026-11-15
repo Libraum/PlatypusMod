@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 public class ModEntities {
     public static final EntityType<Platypus> PLATYPUS = Registry.register(BuiltInRegistries.ENTITY_TYPE,
             new ResourceLocation(Platypodes.MOD_ID, "platypus"),
-            FabricEntityTypeBuilder.create(MobCategory.AXOLOTLS, Platypus::new)
+            FabricEntityTypeBuilder.create(MobCategory.WATER_CREATURE, Platypus::new)
                     .dimensions(EntityDimensions.fixed(0.8f,0.4f)).build());
     public static void registerModEntities() {
         Platypodes.LOGGER.info("Registering Entities for " + Platypodes.MOD_ID);
