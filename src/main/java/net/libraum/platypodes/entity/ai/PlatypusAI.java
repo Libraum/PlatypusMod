@@ -53,7 +53,6 @@ public class PlatypusAI {
                 Activity.CORE,
                 0,
                 ImmutableList.of(
-                        new AnimalPanic(WATER_SPEED),
                         new LookAtTargetSink(45, 90),
                         new MoveToTargetSink(),
                         new CountDownCooldownTicks(MemoryModuleType.TEMPTATION_COOLDOWN_TICKS)
