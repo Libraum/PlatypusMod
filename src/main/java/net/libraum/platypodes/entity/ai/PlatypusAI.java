@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.datafixers.util.Pair;
 import net.libraum.platypodes.entity.ModEntities;
-import net.libraum.platypodes.entity.custom.PlatypusEntity;
+import net.libraum.platypodes.entity.custom.Platypus;
 import net.libraum.platypodes.items.ModItems;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -22,7 +22,6 @@ import net.minecraft.world.entity.ai.behavior.TryFindWater;
 import net.minecraft.world.entity.ai.behavior.declarative.BehaviorBuilder;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.ai.memory.MemoryStatus;
-import net.minecraft.world.entity.animal.axolotl.Axolotl;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.valueproviders.UniformInt;
 import net.minecraft.world.entity.schedule.Activity;
@@ -39,7 +38,7 @@ public class PlatypusAI {
     private static final float WATER_SPEED = 0.5F;
     private static final float FOLLOW_WATER_SPEED = 0.6F;
 
-    public static Brain<?> create(Brain<PlatypusEntity> brain) {
+    public static Brain<?> create(Brain<Platypus> brain) {
         addCoreActivities(brain);
         addIdleActivities(brain);
         brain.setCoreActivities(ImmutableSet.of(Activity.CORE));
@@ -48,7 +47,7 @@ public class PlatypusAI {
         return brain;
     }
 
-    private static void addCoreActivities(@UnknownNullability Brain<PlatypusEntity> brain) {
+    private static void addCoreActivities(@UnknownNullability Brain<Platypus> brain) {
         brain.addActivity(
                 Activity.CORE,
                 0,
@@ -60,7 +59,7 @@ public class PlatypusAI {
         );
     }
 
-    private static void addIdleActivities(@UnknownNullability Brain<PlatypusEntity> brain) {
+    private static void addIdleActivities(@UnknownNullability Brain<Platypus> brain) {
         brain.addActivity(
                 Activity.IDLE,
                 ImmutableList.of(
@@ -107,8 +106,8 @@ public class PlatypusAI {
         }
     }
 
-    public static void updateActivities(PlatypusEntity platypus) {
-        Brain<Axolotl> brain = platypus.getBrain();
+    public static void updateActivities(Platypus platypus) {
+        Brain<Platypus> brain = platypus.getBrain();
         brain.setActiveActivityToFirstValid(ImmutableList.of(Activity.IDLE));
     }
 

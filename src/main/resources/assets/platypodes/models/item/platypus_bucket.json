@@ -8,7 +8,7 @@
       "predicate": {
         "platypodes:variant": 0.25
       },
-      "model": "platypodes:item/platypus_bucket_wild"
+      "model": "platypodes:item/platypus_bucket_dark"
     },
     {
       "predicate": {
@@ -20,13 +20,13 @@
       "predicate": {
         "platypodes:variant": 0.75
       },
-      "model": "platypodes:item/platypus_bucket_cyan"
+      "model": "platypodes:item/platypus_bucket_blue"
     },
     {
       "predicate": {
         "platypodes:variant": 1
       },
-      "model": "platypodes:item/platypus_bucket_blue"
+      "model": "platypodes:item/platypus_bucket_bloop"
     }
   ]
 }

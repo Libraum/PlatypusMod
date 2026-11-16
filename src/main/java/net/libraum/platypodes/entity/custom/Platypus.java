@@ -1,0 +1,603 @@
+package net.libraum.platypodes.entity.custom;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.Dynamic;
+import net.libraum.platypodes.entity.ModEntities;
+import net.libraum.platypodes.entity.ai.PlatypusAI;
+import net.libraum.platypodes.items.ModItems;
+import net.libraum.platypodes.sound.ModSounds;
+import net.libraum.platypodes.util.ModConfig;
+import net.libraum.platypodes.util.ModSensorType;
+import net.minecraft.Util;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.protocol.game.DebugPackets;
+import net.minecraft.network.syncher.EntityDataAccessor;
+import net.minecraft.network.syncher.EntityDataSerializers;
+import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.util.ByIdMap;
+import net.minecraft.util.Mth;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.DifficultyInstance;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.effect.MobEffects;
+import net.minecraft.world.entity.*;
+import net.minecraft.world.entity.ai.Brain;
+import net.minecraft.world.entity.ai.control.SmoothSwimmingLookControl;
+import net.minecraft.world.entity.ai.control.SmoothSwimmingMoveControl;
+import net.minecraft.world.entity.ai.goal.Goal;
+import net.minecraft.world.entity.ai.memory.MemoryModuleType;
+import net.minecraft.world.entity.ai.navigation.AmphibiousPathNavigation;
+import net.minecraft.world.entity.ai.navigation.PathNavigation;
+import net.minecraft.world.entity.ai.sensing.Sensor;
+import net.minecraft.world.entity.ai.sensing.SensorType;
+import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.animal.Animal;
+import net.minecraft.world.entity.animal.Bucketable;
+import net.minecraft.world.entity.animal.WaterAnimal;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvent;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.item.ItemUtils;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.item.alchemy.PotionContents;
+import net.minecraft.world.item.alchemy.Potions;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelAccessor;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
+import org.joml.Vector3f;
+
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.function.IntFunction;
+
+import static net.minecraft.world.entity.animal.WaterAnimal.checkSurfaceWaterAnimalSpawnRules;
+
+public class Platypus extends Animal implements LerpingModel, VariantHolder<Platypus.Variant>, Bucketable {
+    public Platypus(EntityType<? extends Platypus> entityType, Level world) {
+        super(entityType, world);
+        this.setPathfindingMalus(PathType.WATER, 0.0F);
+        this.moveControl = new SmoothSwimmingMoveControl(this, 85, 10, 0.1F, 0.5F, false);
+        this.lookControl = new SmoothSwimmingLookControl(this, 20);
+    }
+    protected static final ImmutableList<? extends SensorType<? extends Sensor<? super Platypus>>> SENSOR_TYPES = ImmutableList.of(
+            SensorType.NEAREST_LIVING_ENTITIES, SensorType.NEAREST_ADULT, SensorType.HURT_BY, ModSensorType.PLATYPUS_TEMPTATIONS
+    );
+    protected static final ImmutableList<? extends MemoryModuleType<?>> MEMORY_TYPES = ImmutableList.of(
+            MemoryModuleType.BREED_TARGET,
+            MemoryModuleType.NEAREST_LIVING_ENTITIES,
+            MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES,
+            MemoryModuleType.NEAREST_VISIBLE_PLAYER,
+            MemoryModuleType.LOOK_TARGET,
+            MemoryModuleType.WALK_TARGET,
+            MemoryModuleType.CANT_REACH_WALK_TARGET_SINCE,
+            MemoryModuleType.PATH,
+            MemoryModuleType.NEAREST_VISIBLE_ADULT,
+            MemoryModuleType.HURT_BY_ENTITY,
+            MemoryModuleType.TEMPTING_PLAYER,
+            MemoryModuleType.TEMPTATION_COOLDOWN_TICKS,
+            MemoryModuleType.IS_TEMPTED,
+            MemoryModuleType.IS_PANICKING
+    );
+    private static final EntityDataAccessor<Integer> DATA_VARIANT = SynchedEntityData.defineId(Platypus.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> DATA_POISON_SUPPLY = SynchedEntityData.defineId(Platypus.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> FROM_BUCKET = SynchedEntityData.defineId(Platypus.class, EntityDataSerializers.BOOLEAN);
+    private final Map<String, Vector3f> modelRotationValues = Maps.newHashMap();
+
+    @Override
+    public Map<String, Vector3f> getModelRotationValues() {
+        return this.modelRotationValues;
+    }
+
+    @Override
+    public float getWalkTargetValue(BlockPos blockPos, LevelReader levelReader) {
+        return 0.0F;
+    }
+
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {
+        super.defineSynchedData(builder);
+        builder.define(DATA_VARIANT, 0);
+        builder.define(DATA_POISON_SUPPLY, this.getMaxPoisonSupply());
+        builder.define(FROM_BUCKET, false);
+    }
+
+    public void addAdditionalSaveData(CompoundTag compoundTag) {
+        super.addAdditionalSaveData(compoundTag);
+        compoundTag.putInt("Variant", this.getVariant().getId());
+        compoundTag.putInt("Poison", this.getPoisonSupply());
+        compoundTag.putBoolean("FromBucket", this.fromBucket());
+    }
+
+    public void readAdditionalSaveData(CompoundTag compoundTag) {
+        super.readAdditionalSaveData(compoundTag);
+        this.setVariant(Platypus.Variant.byId(compoundTag.getInt("Variant")));
+        this.setPoisonSupply(compoundTag.getInt("Poison"));
+        this.setFromBucket(compoundTag.getBoolean("FromBucket"));
+    }
+
+    public static AttributeSupplier.Builder createPlatypusAttributes() {
+        return Mob.createMobAttributes()
+                .add(Attributes.MAX_HEALTH, ModConfig.maxHealth) /* Default: 14*/
+                .add(Attributes.MOVEMENT_SPEED, 1.0)
+                .add(Attributes.ATTACK_DAMAGE, 2.0);
+    }
+
+    /** Behaviour */
+    @Override
+    protected void registerGoals() {
+        this.goalSelector.addGoal(0, new PlatypusBreathAirGoal(this, 0.5));
+    }
+
+    @Override
+    protected Brain<?> makeBrain(Dynamic<?> dynamic) {
+        return PlatypusAI.create(Brain.provider(MEMORY_TYPES, SENSOR_TYPES).makeBrain(dynamic));
+    }
+
+    @Override
+    public Brain<Platypus> getBrain() { return (Brain<Platypus>) super.getBrain(); }
+
+    @Override
+    protected void sendDebugPackets() {
+        super.sendDebugPackets();
+        DebugPackets.sendEntityBrain(this);
+    }
+
+    /** Spawning */
+    public SpawnGroupData finalizeSpawn(ServerLevelAccessor serverLevelAccessor, DifficultyInstance difficultyInstance, MobSpawnType mobSpawnType, @Nullable SpawnGroupData spawnGroupData) {
+        boolean bl = false;
+        if (mobSpawnType == MobSpawnType.BUCKET) {
+            return spawnGroupData;
+        } else {
+            RandomSource randomSource = serverLevelAccessor.getRandom();
+            if (spawnGroupData instanceof Platypus.PlatypusGroupData) {
+                if (((Platypus.PlatypusGroupData)spawnGroupData).getGroupSize() >= 2) {
+                    bl = true;
+                }
+            } else {
+                spawnGroupData = new Platypus.PlatypusGroupData(new Platypus.Variant[]{Platypus.Variant.getCommonSpawnVariant(randomSource), Platypus.Variant.getCommonSpawnVariant(randomSource)});
+            }
+
+            this.setVariant(((Platypus.PlatypusGroupData)spawnGroupData).getVariant(randomSource));
+            if (bl) {
+                this.setAge(-24000);
+            }
+
+            return super.finalizeSpawn(serverLevelAccessor, difficultyInstance, mobSpawnType, spawnGroupData);
+        }
+    }
+
+    public static class PlatypusGroupData extends AgeableMob.AgeableMobGroupData {
+        public Platypus.Variant[] types;
+
+        public PlatypusGroupData(Platypus.Variant... variants) {
+            super(false);
+            this.types = variants;
+        }
+
+        public Platypus.Variant getVariant(RandomSource randomSource) {
+            return this.types[randomSource.nextInt(this.types.length)];
+        }
+    }
+
+    public static boolean checkPlatypusSpawnRules(EntityType<? extends LivingEntity> entityType, LevelAccessor levelAccessor, MobSpawnType mobSpawnType, BlockPos blockPos, RandomSource randomSource) {
+        float na = 0.7403491f; /* Dawn Start */
+        float nz = 0.8348362f; /* Dawn End */
+        float ka = 0.21548219f; /* Dusk Start */
+        float kz = 0.26870248f; /* Dusk End */
+        boolean bl = checkSurfaceWaterAnimalSpawnRules((EntityType<? extends WaterAnimal>) entityType, levelAccessor, mobSpawnType, blockPos, randomSource);
+        if (ModConfig.enableSpawns) {
+            if (ModConfig.spawnDuring == ModConfig.SpawnDuring.DAWNANDDUSK) {
+                if (levelAccessor.getTimeOfDay(0) >= na && levelAccessor.getTimeOfDay(0) <= nz && randomSource.nextFloat() < 0.15f) {
+                    return bl;
+                }
+                if (levelAccessor.getTimeOfDay(0) >= ka && levelAccessor.getTimeOfDay(0) <= kz && randomSource.nextFloat() < 0.15f) {
+                    return bl;
+                }
+            }
+            if (ModConfig.spawnDuring == ModConfig.SpawnDuring.NIGHT) {
+                if (levelAccessor.getTimeOfDay(0) >= ka && levelAccessor.getTimeOfDay(0) <= na && randomSource.nextFloat() < 0.15f) {
+                    return bl;
+                }
+            }
+            if (ModConfig.spawnDuring == ModConfig.SpawnDuring.ALLDAY) {
+                if (randomSource.nextFloat() < 0.15f) {
+                    return bl;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Nullable
+    @Override
+    public AgeableMob getBreedOffspring(ServerLevel world, AgeableMob entity) {
+        Platypus platypusEntity = ModEntities.PLATYPUS.create(world);
+        if (platypusEntity != null) {
+            Variant variant;
+            if (useRareVariant(this.random)) {
+                variant = Platypus.Variant.getRareSpawnVariant(this.random);
+            } else {
+                variant = this.random.nextBoolean() ? this.getVariant() : ((Platypus)entity).getVariant();
+            }
+
+            platypusEntity.setVariant(variant);
+            platypusEntity.setPersistenceRequired();
+        }
+
+        return platypusEntity;
+    }
+
+    @Override
+    public boolean isFood(ItemStack itemStack) {
+        return itemStack.is(ModItems.YABBY);
+    }
+
+    /** Interact */
+    @Override
+    public InteractionResult mobInteract(Player player, InteractionHand interactionHand){
+        ItemStack itemStack = player.getItemInHand(interactionHand);
+        if (itemStack.is(Items.GLASS_BOTTLE) && Platypus.this.getPoisonSupply() == this.getMaxPoisonSupply()) {
+            player.playSound(SoundEvents.BOTTLE_FILL, 1.0F, 1.0F);
+            ItemStack itemStack2 = ItemUtils.createFilledResult(itemStack, player, PotionContents.createItemStack(new ItemStack(Items.POTION).getItem(), Potions.POISON));
+            player.setItemInHand(interactionHand, itemStack2);
+            if (!player.isCreative()) {
+                Platypus.this.setPoisonSupply(0);
+            }
+            return InteractionResult.sidedSuccess(this.level().isClientSide);
+        } else {
+            return Bucketable.bucketMobPickup(player, interactionHand, this).orElse(super.mobInteract(player, interactionHand));
+        }
+    }
+
+    public void saveToBucketTag(ItemStack itemStack) {
+        Bucketable.saveDefaultDataToBucketTag(this, itemStack);
+        CustomData.update(DataComponents.BUCKET_ENTITY_DATA, itemStack, (compoundTag) -> {
+            compoundTag.putInt("Variant", this.getVariant().getId());
+            compoundTag.putInt("Age", this.getAge());
+        });
+    }
+
+    public void loadFromBucketTag(CompoundTag compoundTag) {
+        Bucketable.loadDefaultDataFromBucketTag(this, compoundTag);
+        this.setVariant(Platypus.Variant.byId(compoundTag.getInt("Variant")));
+        if (compoundTag.contains("Age")) {
+            this.setAge(compoundTag.getInt("Age"));
+        }
+    }
+
+    @Override
+    public ItemStack getBucketItemStack() { return new ItemStack(ModItems.PLATYPUS_BUCKET); }
+
+    /** Air Supply Handler */
+    public void baseTick() {
+        int i = this.getPoisonSupply();
+        int j = this.getAirSupply();
+        super.baseTick();
+        if (!this.isNoAi()) {
+            this.handlePoisonSupply(i);
+            this.handleAirSupply(j);
+        }
+    }
+
+    @Override
+    public int getMaxAirSupply() {
+        return ModConfig.maxAirSupply;
+    } /* Defualt: 1200 */
+
+//    @Override
+//    public boolean canBreatheUnderwater() {
+//        return false;
+//    }
+
+    protected void handleAirSupply(int air) {
+        if (this.isAlive() && this.isInWaterRainOrBubble()) {
+            this.setAirSupply(air - 1);
+            if (this.getAirSupply() == -20) {
+                this.setAirSupply(0);
+                this.hurt(this.damageSources().drown(), 2.0F);
+            }
+        } else {
+            this.setAirSupply(this.getMaxAirSupply());
+        }
+    }
+
+    /** Poison Supply Handler */
+    public int getMaxPoisonSupply() {
+        return ModConfig.maxPoisonSupply;
+    } /* Default: 6000 */
+
+    public int getPoisonSupply() {
+        return this.entityData.get(DATA_POISON_SUPPLY);
+    }
+
+    public void setPoisonSupply(int i) {
+        this.entityData.set(DATA_POISON_SUPPLY, i);
+    }
+
+    protected void handlePoisonSupply(int tick) {
+        if (this.isAlive() && !this.isBaby()) {
+            this.setPoisonSupply(tick + 1);
+            if (this.getPoisonSupply() >= this.getMaxPoisonSupply()) {
+                this.setPoisonSupply(this.getMaxPoisonSupply());
+            }
+        } else {
+            this.setPoisonSupply(0);
+        }
+    }
+
+    @Override
+    public boolean checkSpawnObstruction(LevelReader levelReader) {
+        return levelReader.isUnobstructed(this);
+    }
+
+    @Override
+    public boolean isPushedByFluid() {
+        return false;
+    }
+
+    @Override
+    public boolean fromBucket() {
+        return this.entityData.get(FROM_BUCKET);
+    }
+
+    @Override
+    public void setFromBucket(boolean bl) {
+        this.entityData.set(FROM_BUCKET, bl);
+    }
+
+    public boolean canBeLeashed() {
+        return true;
+    }
+
+    @Override
+    protected void customServerAiStep() {
+        this.level().getProfiler().push("platypusBrain");
+        this.getBrain().tick((ServerLevel) this.level(), this);
+        this.level().getProfiler().pop();
+        this.level().getProfiler().push("platypusActivityUpdate");
+        PlatypusAI.updateActivities(this);
+        this.level().getProfiler().pop();
+    }
+
+    @Override
+    protected PathNavigation createNavigation(Level level) {
+        return new AmphibiousPathNavigation(this, level);
+    }
+
+    @Override
+    public boolean hurt(DamageSource damageSource, float f) {
+        boolean bl = super.hurt(damageSource, f);
+        if (bl && damageSource.getDirectEntity() instanceof LivingEntity entity) {
+            if (this.isAlive()
+                    && !damageSource.isCreativePlayer()
+                    && this.getPoisonSupply() == this.getMaxPoisonSupply()) {
+                entity.addEffect(new MobEffectInstance(MobEffects.POISON, 100));
+                this.playSound(ModSounds.ENTITY_PLATYPUS_ATTACK, 1.0F, 1.0F);
+                this.setPoisonSupply(0);
+            }
+        }
+        return bl;
+    }
+
+//    @Override
+//    protected float getStandingEyeHeight(Pose pose, EntityDimensions entityDimensions) {
+//        return entityDimensions.height() * 0.655F;
+//    }
+
+    @Override
+    public int getMaxHeadXRot() {
+        return 1;
+    }
+
+    @Override
+    public int getMaxHeadYRot() {
+        return 1;
+    }
+
+    @Override
+    public boolean requiresCustomPersistence() {
+        return super.requiresCustomPersistence() || this.fromBucket();
+    }
+
+    @Override
+    public void travel(Vec3 vec3) {
+        if (this.isControlledByLocalInstance() && this.isInWater()) {
+            this.moveRelative(this.getSpeed(), vec3);
+            this.move(MoverType.SELF, this.getDeltaMovement());
+            this.setDeltaMovement(this.getDeltaMovement().scale(0.9));
+        } else {
+            super.travel(vec3);
+        }
+    }
+
+    @Override
+    public boolean removeWhenFarAway(double d) {
+        return !this.fromBucket() && !this.hasCustomName();
+    }
+
+    /** Variant control */
+    public Platypus.Variant getVariant() {
+        return Platypus.Variant.byId(this.entityData.get(DATA_VARIANT));
+    }
+
+    public void setVariant(Platypus.Variant variant) {
+        this.entityData.set(DATA_VARIANT, variant.getId());
+    }
+
+    private static boolean useRareVariant(RandomSource randomSource) {
+        return randomSource.nextInt(ModConfig.rareVariantChance) == 0;
+    }
+
+    public enum Variant implements StringRepresentable {
+        BROWN(0, "brown", true),
+        DARK(1, "dark", true),
+        GOLD(2, "gold", true),
+        BLUE(3, "blue", true),
+        BLOOP(4, "bloop", false);
+
+        private static final IntFunction<Variant> BY_ID = ByIdMap.continuous(Platypus.Variant::getId, values(), ByIdMap.OutOfBoundsStrategy.ZERO);
+        public static final Codec<Variant> CODEC = StringRepresentable.fromEnum(Platypus.Variant::values);
+        private final int id;
+        private final String name;
+        private final boolean common;
+
+        Variant(int j, String string2, boolean bl) {
+            this.id = j;
+            this.name = string2;
+            this.common = bl;
+        }
+
+        public int getId() {
+            return this.id;
+        }
+
+        public String getName() {
+            return this.name;
+        }
+
+        @Override
+        public String getSerializedName() {
+            return this.name;
+        }
+
+        public static Platypus.Variant byId(int i) {
+            return BY_ID.apply(i);
+        }
+
+        public static Platypus.Variant getCommonSpawnVariant(RandomSource randomSource) {
+            return getSpawnVariant(randomSource, true);
+        }
+
+        public static Platypus.Variant getRareSpawnVariant(RandomSource randomSource) {
+            return getSpawnVariant(randomSource, false);
+        }
+
+        private static Platypus.Variant getSpawnVariant(RandomSource randomSource, boolean bl) {
+            Platypus.Variant[] variants = Arrays.stream(values()).filter(variant -> variant.common == bl).toArray(Platypus.Variant[]::new);
+            return Util.getRandom(variants, randomSource);
+        }
+    }
+
+    /** Sound Events */
+    @Nullable
+    @Override
+    protected SoundEvent getAmbientSound() {
+        return this.isInWater() ? ModSounds.ENTITY_PLATYPUS_IDLE_WATER : ModSounds.ENTITY_PLATYPUS_IDLE_AIR;
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getHurtSound(DamageSource source) {
+        return ModSounds.ENTITY_PLATYPUS_HURT;
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getDeathSound() {
+        return ModSounds.ENTITY_PLATYPUS_DEATH;
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getSwimSplashSound() {
+        return ModSounds.ENTITY_PLATYPUS_SPLASH;
+    }
+
+    @Nullable
+    @Override
+    protected SoundEvent getSwimSound() {
+        return ModSounds.ENTITY_PLATYPUS_SWIM;
+    }
+
+    @Nullable
+    @Override
+    public SoundEvent getPickupSound() {
+        return ModSounds.ITEM_BUCKET_FILL_PLATYPUS;
+    }
+
+    /** Custom Goals */
+    static class PlatypusBreathAirGoal extends Goal {
+        private final PathfinderMob mob;
+        private final double speed;
+
+        public PlatypusBreathAirGoal(PathfinderMob pathfinderMob, Double d) {
+            this.mob = pathfinderMob;
+            this.speed = d;
+            this.setFlags(EnumSet.of(Flag.MOVE, Flag.LOOK));
+        }
+
+        public boolean canUse() {
+            return this.mob.getAirSupply() < 140;
+        }
+
+        public boolean canContinueToUse() {
+            return this.canUse();
+        }
+
+        public boolean isInterruptable() {
+            return false;
+        }
+
+        public void start() {
+            this.findAirPosition();
+        }
+
+        private void findAirPosition() {
+            Iterable<BlockPos> iterable = BlockPos.betweenClosed(
+                    Mth.floor(this.mob.getX() - (double)1.0F),
+                    this.mob.getBlockY(),
+                    Mth.floor(this.mob.getZ() - (double)1.0F),
+                    Mth.floor(this.mob.getX() + (double)1.0F),
+                    Mth.floor(this.mob.getY() + (double)8.0F),
+                    Mth.floor(this.mob.getZ() + (double)1.0F));
+            BlockPos blockPos = null;
+
+            for(BlockPos blockPos2 : iterable) {
+                if (this.givesAir(this.mob.level(), blockPos2)) {
+                    blockPos = blockPos2;
+                    break;
+                }
+            }
+
+            if (blockPos == null) {
+                blockPos = BlockPos.containing(this.mob.getX(), this.mob.getY() + (double)8.0F, this.mob.getZ());
+            }
+
+            this.mob.getNavigation().moveTo(
+                    (double)blockPos.getX(),
+                    (double)(blockPos.getY() + 1),
+                    (double)blockPos.getZ(),
+                    (double)speed);
+        }
+
+        public void tick() {
+            this.findAirPosition();
+            this.mob.moveRelative(0.02F, new Vec3((double)this.mob.xxa, (double)this.mob.yya, (double)this.mob.zza));
+            this.mob.move(MoverType.SELF, this.mob.getDeltaMovement());
+        }
+
+        private boolean givesAir(LevelReader levelReader, BlockPos blockPos) {
+            BlockState blockState = levelReader.getBlockState(blockPos);
+            return (levelReader.getFluidState(blockPos).isEmpty() || blockState.is(Blocks.BUBBLE_COLUMN)) && blockState.isPathfindable(PathComputationType.LAND);
+        }
+    }
+}

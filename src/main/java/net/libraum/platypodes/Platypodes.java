@@ -5,14 +5,14 @@ import net.fabricmc.api.ModInitializer;
 
 import net.fabricmc.fabric.api.object.builder.v1.entity.FabricDefaultAttributeRegistry;
 import net.libraum.platypodes.entity.ModEntities;
-import net.libraum.platypodes.entity.custom.PlatypusEntity;
+import net.libraum.platypodes.entity.custom.Platypus;
 import net.libraum.platypodes.items.ModItemGroups;
 import net.libraum.platypodes.items.ModItems;
 import net.libraum.platypodes.sound.ModSounds;
 import net.libraum.platypodes.util.ModConfig;
-import net.libraum.platypodes.util.ModCustomTrades;
+import net.libraum.platypodes.util.ModTrades;
 import net.libraum.platypodes.util.ModLootTableModifiers;
-import net.libraum.platypodes.world.gen.ModWorldGeneration;
+import net.libraum.platypodes.world.gen.ModEntityGeneration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,18 +22,18 @@ public class Platypodes implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		MidnightConfig.init("platypodes", ModConfig.class);
+
 		ModItemGroups.registerItemGroups();
 		ModItems.registerModItems();
 		ModEntities.registerModEntities();
-		ModWorldGeneration.generateModWorldGen();
+		ModEntityGeneration.registerModSpawns();
 
-		ModCustomTrades.registerCustomTrades();
+		ModTrades.registerModTrades();
 		ModLootTableModifiers.modifyLootTables();
 
 		ModSounds.registerSounds();
 
-		FabricDefaultAttributeRegistry.register(ModEntities.PLATYPUS, PlatypusEntity.createPlatypusAttributes());
-
-		MidnightConfig.init("platypodes", ModConfig.class);
+		FabricDefaultAttributeRegistry.register(ModEntities.PLATYPUS, Platypus.createPlatypusAttributes());
 	}
 }

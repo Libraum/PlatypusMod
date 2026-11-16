@@ -3,7 +3,6 @@
 	"package": "net.libraum.platypodes.mixin",
 	"compatibilityLevel": "JAVA_17",
 	"mixins": [
-		"AxolotlMixin"
 	],
 	"injectors": {
 		"defaultRequire": 1

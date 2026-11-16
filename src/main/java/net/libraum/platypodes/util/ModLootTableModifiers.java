@@ -24,37 +24,40 @@ public class ModLootTableModifiers {
 
     public static void modifyLootTables() {
         LootTableEvents.MODIFY.register((key, tableBuilder, source, registries) -> {
-
-            if(VILLAGE_FISHER_CHEST_ID.equals(key.location()) && ModConfig.fisherChests) {
-                LootPool.Builder poolBuilder = LootPool.lootPool()
-                        .setRolls(ConstantValue.exactly(1))
-                        .when(LootItemRandomChanceCondition.randomChance(0.33f))
-                        .add(LootItem.lootTableItem(ModItems.YABBY))
-                        .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0f, 3.0f)).build());
-                tableBuilder.pool(poolBuilder.build());
+            if (ModConfig.fisherChests) {
+                if (VILLAGE_FISHER_CHEST_ID.equals(key.location())) {
+                    LootPool.Builder poolBuilder = LootPool.lootPool()
+                            .setRolls(ConstantValue.exactly(1))
+                            .when(LootItemRandomChanceCondition.randomChance(0.33f))
+                            .add(LootItem.lootTableItem(ModItems.YABBY))
+                            .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0f, 3.0f)).build());
+                    tableBuilder.pool(poolBuilder.build());
+                }
             }
 
-            if(SEAGRASS.equals(key.location())) {
-                LootPool.Builder poolBuilder = LootPool.lootPool()
-                        .setRolls(ConstantValue.exactly(1))
-                        .when(LootItemRandomChanceCondition.randomChance(ModConfig.seagrassDrops)) /* Default: 5% */
-                        .when(InvertedLootItemCondition.invert(MatchTool.toolMatches(ItemPredicate.Builder.item().of(Items.SHEARS))))
-                        .when(ExplosionCondition.survivesExplosion())
-                        .add(LootItem.lootTableItem(ModItems.YABBY))
-                        .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0f, 2.0f)).build());
-                tableBuilder.pool(poolBuilder.build());
-            }
+//            if(SEAGRASS.equals(key.location())) {
+//                LootPool.Builder poolBuilder = LootPool.lootPool()
+//                        .setRolls(ConstantValue.exactly(1))
+//                        .when(LootItemRandomChanceCondition.randomChance(ModConfig.seagrassDrops)) /* Default: 5% */
+//                        .when(InvertedLootItemCondition.invert(MatchTool.toolMatches(ItemPredicate.Builder.item().of(Items.SHEARS))))
+//                        .when(ExplosionCondition.survivesExplosion())
+//                        .add(LootItem.lootTableItem(ModItems.YABBY))
+//                        .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0f, 2.0f)).build());
+//                tableBuilder.pool(poolBuilder.build());
+//            }
 
-            if(TALL_SEAGRASS.equals(key.location())) {
-                LootPool.Builder poolBuilder = LootPool.lootPool()
-                        .setRolls(ConstantValue.exactly(1))
-                        .when(LootItemRandomChanceCondition.randomChance(ModConfig.seagrassDrops)) /* Default: 5% */
-                        .when(InvertedLootItemCondition.invert(MatchTool.toolMatches(ItemPredicate.Builder.item().of(Items.SHEARS))))
-                        .when(ExplosionCondition.survivesExplosion())
-                        .add(LootItem.lootTableItem(ModItems.YABBY))
-                        .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0f, 1.0f)).build());
-                tableBuilder.pool(poolBuilder.build());
-            }
+            // Loot changes applies to both top and bottom halves, causing doubled drops when other half is broken automatically.
+            // Until conditions can be replicated, use JSON loot table instead.
+//            if(TALL_SEAGRASS.equals(key.location())) {
+//                LootPool.Builder poolBuilder = LootPool.lootPool()
+//                        .setRolls(ConstantValue.exactly(1))
+//                        .when(LootItemRandomChanceCondition.randomChance(ModConfig.seagrassDrops)) /* Default: 5% */
+//                        .when(InvertedLootItemCondition.invert(MatchTool.toolMatches(ItemPredicate.Builder.item().of(Items.SHEARS))))
+//                        .when(ExplosionCondition.survivesExplosion())
+//                        .add(LootItem.lootTableItem(ModItems.YABBY))
+//                        .apply(SetItemCountFunction.setCount(UniformGenerator.between(1.0f, 1.0f)).build());
+//                tableBuilder.pool(poolBuilder.build());
+//            }
         });
     }
 }

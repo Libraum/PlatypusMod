@@ -7,8 +7,8 @@ import net.fabricmc.fabric.api.client.rendering.v1.EntityModelLayerRegistry;
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry;
 import net.libraum.platypodes.entity.ModEntities;
 import net.libraum.platypodes.entity.client.ModModelLayers;
-import net.libraum.platypodes.entity.client.PlatypusEntityModel;
-import net.libraum.platypodes.entity.client.PlatypusEntityRenderer;
+import net.libraum.platypodes.entity.client.PlatypusModel;
+import net.libraum.platypodes.entity.client.PlatypusRenderer;
 import net.libraum.platypodes.util.ModModelPredicates;
 
 @Environment(EnvType.CLIENT)
@@ -16,8 +16,8 @@ public class PlatypodesClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        EntityRendererRegistry.register(ModEntities.PLATYPUS, PlatypusEntityRenderer::new);
-        EntityModelLayerRegistry.registerModelLayer(ModModelLayers.PLATYPUS, PlatypusEntityModel::getTexturedModelData);
+        EntityRendererRegistry.register(ModEntities.PLATYPUS, PlatypusRenderer::new);
+        EntityModelLayerRegistry.registerModelLayer(ModModelLayers.PLATYPUS, PlatypusModel::getTexturedModelData);
         ModModelPredicates.registerModelPredicates();
     }
 }

@@ -1,7 +1,7 @@
 {
 	"schemaVersion": 1,
 	"id": "platypodes",
-	"version": "1.2+1.21.1",
+	"version": "1.3+1.21.1",
 	"name": "Platypodes",
 	"description": "Platypodes is a lightweight, standalone mod that adds Platypus to Minecraft!",
 	"authors": [
@@ -27,7 +27,6 @@
 		]
 	},
 	"mixins": [
-		"platypodes.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.19.3",
