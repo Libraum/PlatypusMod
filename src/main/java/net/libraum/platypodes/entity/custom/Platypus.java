@@ -466,7 +466,7 @@ public class Platypus extends Animal implements LerpingModel, VariantHolder<Plat
     }
 
     private static boolean useRareVariant(RandomSource randomSource) {
-        return randomSource.nextInt(ModConfig.rareVariantChance) == 1200;
+        return randomSource.nextInt(ModConfig.rareVariantChance) == 0;
     }
 
     public enum Variant implements StringRepresentable {
